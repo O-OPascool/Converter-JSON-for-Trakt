@@ -1,0 +1,3055 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Time → Trakt Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root,
+    [data-theme="light"] {
+      --bg: #f7f6f2;
+      --surf: #f9f8f5;
+      --surf2: #fbfbf9;
+      --surfoff: #f0ede8;
+      --div: #dcd9d5;
+      --bord: #d4d1ca;
+      --tx: #28251d;
+      --txm: #7a7974;
+      --txf: #bab9b4;
+      --pri: #01696f;
+      --prih: #0c4e54;
+      --prihl: #cedcd8;
+      --ok: #437a22;
+      --okhl: #d4dfcc;
+      --warn: #964219;
+      --warnhl: #ddcfc6;
+      --err: #a12c7b;
+      --errhl: #e0ced7;
+      --org: #da7101;
+      --orghl: #e7d7c4;
+      --blue: #006494;
+      --bluehl: #c6d8e4;
+      --trakt: #ed1c24;
+      --trakthl: rgba(237, 28, 36, .1);
+      --xs: clamp(.75rem, .7rem + .25vw, .875rem);
+      --sm: clamp(.875rem, .8rem + .35vw, 1rem);
+      --base: clamp(1rem, .95rem + .25vw, 1.125rem);
+      --lg: clamp(1.125rem, 1rem + .75vw, 1.5rem);
+      --xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --s1: .25rem;
+      --s2: .5rem;
+      --s3: .75rem;
+      --s4: 1rem;
+      --s5: 1.25rem;
+      --s6: 1.5rem;
+      --s8: 2rem;
+      --s10: 2.5rem;
+      --s12: 3rem;
+      --s16: 4rem;
+      --rsm: .375rem;
+      --rmd: .5rem;
+      --rlg: .75rem;
+      --rxl: 1rem;
+      --rfull: 9999px;
+      --shsm: 0 1px 2px oklch(0.2 0.01 80/.06);
+      --shmd: 0 4px 12px oklch(0.2 0.01 80/.1);
+      --shlg: 0 12px 32px oklch(0.2 0.01 80/.14);
+      --tr: 180ms cubic-bezier(.16, 1, .3, 1);
+      --fb: 'Inter', 'Helvetica Neue', sans-serif;
+      --fm: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f0e0d;
+      --surf: #161513;
+      --surf2: #1c1b19;
+      --surfoff: #1a1917;
+      --div: #242320;
+      --bord: #2e2d2b;
+      --tx: #cdccca;
+      --txm: #797876;
+      --txf: #4a4948;
+      --pri: #4f98a3;
+      --prih: #227f8b;
+      --prihl: #1e3538;
+      --ok: #6daa45;
+      --okhl: #1e3018;
+      --warn: #bb653b;
+      --warnhl: #2e1e12;
+      --err: #d163a7;
+      --errhl: #2a1020;
+      --org: #fdab43;
+      --orghl: #2a1e08;
+      --blue: #5591c7;
+      --bluehl: #1a2b3c;
+      --trakt: #ff4d55;
+      --trakthl: rgba(255, 77, 85, .12);
+      --shsm: 0 1px 2px oklch(0 0 0/.3);
+      --shmd: 0 4px 12px oklch(0 0 0/.4);
+      --shlg: 0 12px 32px oklch(0 0 0/.5);
+    }
+
+    @media(prefers-color-scheme:dark) {
+      :root:not([data-theme]) {
+        --bg: #0f0e0d;
+        --surf: #161513;
+        --surf2: #1c1b19;
+        --surfoff: #1a1917;
+        --div: #242320;
+        --bord: #2e2d2b;
+        --tx: #cdccca;
+        --txm: #797876;
+        --txf: #4a4948;
+        --pri: #4f98a3;
+        --prih: #227f8b;
+        --prihl: #1e3538;
+        --ok: #6daa45;
+        --okhl: #1e3018;
+        --warn: #bb653b;
+        --warnhl: #2e1e12;
+        --err: #d163a7;
+        --errhl: #2a1020;
+        --org: #fdab43;
+        --orghl: #2a1e08;
+        --blue: #5591c7;
+        --bluehl: #1a2b3c;
+        --trakt: #ff4d55;
+        --trakthl: rgba(255, 77, 85, .12);
+      }
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      scroll-behavior: smooth
+    }
+
+    body {
+      min-height: 100dvh;
+      font-family: var(--fb);
+      font-size: var(--base);
+      color: var(--tx);
+      background: var(--bg);
+      line-height: 1.6
+    }
+
+    svg {
+      display: block
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+      border: none;
+      font: inherit;
+      color: inherit
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%
+    }
+
+    input {
+      font: inherit;
+      color: inherit
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--pri);
+      outline-offset: 3px;
+      border-radius: var(--rsm)
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important
+      }
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 100dvh
+    }
+
+    header {
+      border-bottom: 1px solid var(--bord);
+      background: var(--surf);
+      padding: var(--s4) var(--s6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px)
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--s3)
+    }
+
+    .logo-text {
+      font-size: var(--base);
+      font-weight: 600;
+      letter-spacing: -.01em
+    }
+
+    .logo-sub {
+      font-size: var(--xs);
+      color: var(--txm);
+      font-weight: 400;
+      margin-left: var(--s1)
+    }
+
+    .theme-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--rmd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--txm);
+      transition: background var(--tr), color var(--tr)
+    }
+
+    .theme-btn:hover {
+      background: var(--surfoff);
+      color: var(--tx)
+    }
+
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      width: 100%;
+      padding: var(--s10) var(--s6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s8)
+    }
+
+    .hero {
+      text-align: center
+    }
+
+    .hero h1 {
+      font-size: var(--xl);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: var(--s3)
+    }
+
+    .hero p {
+      font-size: var(--sm);
+      color: var(--txm);
+      max-width: 58ch;
+      margin: 0 auto
+    }
+
+    .slbl {
+      font-size: var(--xs);
+      font-weight: 600;
+      color: var(--txm);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: var(--s3);
+      display: flex;
+      align-items: center;
+      gap: var(--s2)
+    }
+
+    .slbl-n {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--rfull);
+      background: var(--prihl);
+      color: var(--pri);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    /* FILE GRID — shows what each Liberator file does */
+    .file-guide {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--s3);
+      margin-bottom: var(--s4)
+    }
+
+    .fg-card {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rlg);
+      padding: var(--s4);
+      display: flex;
+      gap: var(--s3);
+      align-items: flex-start;
+      transition: border-color var(--tr)
+    }
+
+    .fg-card.active {
+      border-color: var(--pri);
+      background: var(--prihl)
+    }
+
+    .fg-icon {
+      font-size: 1.4rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .fg-name {
+      font-size: var(--sm);
+      font-weight: 600;
+      font-family: var(--fm);
+      color: var(--tx);
+      margin-bottom: 2px
+    }
+
+    .fg-desc {
+      font-size: var(--xs);
+      color: var(--txm);
+      line-height: 1.4
+    }
+
+    .fg-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: var(--rfull);
+      margin-top: var(--s2);
+      border: 1px solid
+    }
+
+    .badge-movie {
+      background: var(--orghl);
+      color: var(--org);
+      border-color: color-mix(in oklch, var(--org) 30%, transparent)
+    }
+
+    .badge-show {
+      background: var(--prihl);
+      color: var(--pri);
+      border-color: color-mix(in oklch, var(--pri) 30%, transparent)
+    }
+
+    .badge-extra {
+      background: var(--surfoff);
+      color: var(--txm);
+      border-color: var(--bord)
+    }
+
+    /* DROP ZONE */
+    .drop {
+      border: 2px dashed var(--bord);
+      border-radius: var(--rxl);
+      padding: var(--s10) var(--s8);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--tr), background var(--tr);
+      background: var(--surf);
+      position: relative
+    }
+
+    .drop:hover,
+    .drop.over {
+      border-color: var(--pri);
+      background: var(--prihl)
+    }
+
+    .drop input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%
+    }
+
+    .drop-icon {
+      margin: 0 auto var(--s4);
+      color: var(--txf)
+    }
+
+    .drop-title {
+      font-weight: 600;
+      margin-bottom: var(--s2)
+    }
+
+    .drop-sub {
+      font-size: var(--sm);
+      color: var(--txm)
+    }
+
+    .drop-tags {
+      display: flex;
+      gap: var(--s2);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: var(--s4)
+    }
+
+    .tag {
+      font-size: var(--xs);
+      font-family: var(--fm);
+      padding: 2px var(--s2);
+      border-radius: var(--rsm);
+      background: var(--surfoff);
+      border: 1px solid var(--bord);
+      color: var(--txm)
+    }
+
+    .drop-tip {
+      font-size: var(--xs);
+      color: var(--pri);
+      margin-top: var(--s3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--s2)
+    }
+
+    /* LOADED FILES CHIPS */
+    .loaded-files {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s2);
+      margin-bottom: var(--s4)
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--s2);
+      padding: var(--s2) var(--s3);
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rfull);
+      font-size: var(--xs);
+      font-family: var(--fm);
+      transition: all var(--tr)
+    }
+
+    .file-chip.ok {
+      border-color: var(--ok);
+      background: var(--okhl)
+    }
+
+    .file-chip.warn {
+      border-color: var(--warn);
+      background: var(--warnhl);
+      color: var(--warn)
+    }
+
+    .chip-rm {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--surfoff);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      transition: background var(--tr)
+    }
+
+    .chip-rm:hover {
+      background: var(--err);
+      color: #fff
+    }
+
+    /* API PANEL */
+    .api-panel {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rxl);
+      overflow: hidden
+    }
+
+    .api-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--bord);
+      background: var(--surfoff)
+    }
+
+    .api-tab {
+      flex: 1;
+      padding: var(--s3) var(--s4);
+      font-size: var(--xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--txm);
+      border-bottom: 2px solid transparent;
+      transition: all var(--tr);
+      cursor: pointer;
+      text-align: center
+    }
+
+    .api-tab:hover {
+      color: var(--tx);
+      background: var(--surf)
+    }
+
+    .api-tab.on {
+      color: var(--tx);
+      border-bottom-color: var(--pri);
+      background: var(--surf)
+    }
+
+    .api-tab.trakt-tab.on {
+      color: var(--trakt);
+      border-bottom-color: var(--trakt)
+    }
+
+    .api-body {
+      padding: var(--s5) var(--s6)
+    }
+
+    .api-pane {
+      display: none
+    }
+
+    .api-pane.on {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s4)
+    }
+
+    .api-desc {
+      font-size: var(--sm);
+      color: var(--txm);
+      padding: var(--s3) var(--s4);
+      background: var(--surfoff);
+      border-radius: var(--rmd);
+      border-left: 3px solid var(--bord);
+      line-height: 1.6
+    }
+
+    .api-desc.trakt {
+      border-left-color: var(--trakt);
+      background: var(--trakthl)
+    }
+
+    .api-desc.tvmaze {
+      border-left-color: var(--ok);
+      background: var(--okhl)
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s2)
+    }
+
+    .field label {
+      font-size: var(--xs);
+      font-weight: 600;
+      color: var(--txm)
+    }
+
+    .field-hint {
+      font-size: var(--xs);
+      color: var(--txf)
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: var(--s2)
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      flex: 1;
+      background: var(--surfoff);
+      border: 1px solid var(--bord);
+      border-radius: var(--rmd);
+      padding: var(--s2) var(--s4);
+      font-size: var(--sm);
+      color: var(--tx);
+      transition: border-color var(--tr), box-shadow var(--tr)
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--pri);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--pri) 20%, transparent);
+      outline: none
+    }
+
+    .toggle-vis {
+      padding: var(--s2) var(--s3);
+      border-radius: var(--rmd);
+      background: var(--surfoff);
+      border: 1px solid var(--bord);
+      color: var(--txm);
+      font-size: var(--xs);
+      transition: all var(--tr);
+      cursor: pointer
+    }
+
+    .toggle-vis:hover {
+      background: var(--div)
+    }
+
+    /* NOTICE */
+    .notice {
+      border-radius: var(--rlg);
+      padding: var(--s4) var(--s5);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--s3);
+      font-size: var(--sm);
+      animation: fi .2s ease
+    }
+
+    .notice.ok {
+      background: var(--okhl);
+      border: 1px solid color-mix(in oklch, var(--ok) 25%, transparent)
+    }
+
+    .notice.warn {
+      background: var(--warnhl);
+      border: 1px solid color-mix(in oklch, var(--warn) 25%, transparent)
+    }
+
+    .notice.err {
+      background: var(--errhl);
+      border: 1px solid color-mix(in oklch, var(--err) 25%, transparent)
+    }
+
+    .notice.info {
+      background: var(--prihl);
+      border: 1px solid color-mix(in oklch, var(--pri) 25%, transparent)
+    }
+
+    .notice-icon {
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .notice .ttl {
+      font-weight: 600;
+      margin-bottom: 2px
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: var(--s3)
+    }
+
+    .stat {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rlg);
+      padding: var(--s4) var(--s5);
+      transition: box-shadow var(--tr)
+    }
+
+    .stat:hover {
+      box-shadow: var(--shmd)
+    }
+
+    .stat-val {
+      font-size: var(--xl);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.02em;
+      line-height: 1.1
+    }
+
+    .stat-lbl {
+      font-size: var(--xs);
+      color: var(--txm);
+      margin-top: var(--s1)
+    }
+
+    .stat.total .stat-val {
+      color: var(--ok)
+    }
+
+    .stat.movies .stat-val {
+      color: var(--org)
+    }
+
+    .stat.shows .stat-val {
+      color: var(--pri)
+    }
+
+    .stat.ambig .stat-val {
+      color: var(--warn)
+    }
+
+    /* CLASSIF */
+    .classif-panel {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rxl);
+      overflow: hidden
+    }
+
+    .classif-hd {
+      padding: var(--s4) var(--s6);
+      border-bottom: 1px solid var(--div);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s4);
+      flex-wrap: wrap
+    }
+
+    .classif-title {
+      font-size: var(--base);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--s2)
+    }
+
+    .classif-body {
+      padding: var(--s5) var(--s6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s4)
+    }
+
+    .classif-actions {
+      display: flex;
+      gap: var(--s3);
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .src-badges {
+      display: flex;
+      gap: var(--s2);
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .src-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px var(--s3);
+      border-radius: var(--rfull);
+      font-size: var(--xs);
+      font-weight: 500;
+      border: 1px solid
+    }
+
+    .src-trakt {
+      background: var(--trakthl);
+      color: var(--trakt);
+      border-color: color-mix(in oklch, var(--trakt) 30%, transparent)
+    }
+
+    .src-tvmaze {
+      background: color-mix(in oklch, var(--ok) 12%, transparent);
+      color: var(--ok);
+      border-color: color-mix(in oklch, var(--ok) 25%, transparent)
+    }
+
+    .src-manual {
+      background: var(--surfoff);
+      color: var(--txm);
+      border-color: var(--bord)
+    }
+
+    /* PROGRESS */
+    .prog-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s2)
+    }
+
+    .prog-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: var(--xs);
+      color: var(--txm)
+    }
+
+    .prog-bar-bg {
+      height: 6px;
+      background: var(--bord);
+      border-radius: var(--rfull);
+      overflow: hidden
+    }
+
+    .prog-bar {
+      height: 100%;
+      background: var(--trakt);
+      border-radius: var(--rfull);
+      transition: width .3s ease;
+      width: 0%
+    }
+
+    .prog-log {
+      font-size: var(--xs);
+      color: var(--txf);
+      font-family: var(--fm);
+      max-height: 80px;
+      overflow-y: auto
+    }
+
+    .prog-log::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .prog-log::-webkit-scrollbar-thumb {
+      background: var(--bord);
+      border-radius: 2px
+    }
+
+    /* CARD + TABLE */
+    .card {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rxl);
+      overflow: hidden
+    }
+
+    .card-hd {
+      padding: var(--s4) var(--s6);
+      border-bottom: 1px solid var(--div);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s4);
+      flex-wrap: wrap
+    }
+
+    .card-title {
+      font-size: var(--base);
+      font-weight: 600
+    }
+
+    .card-body {
+      padding: var(--s5) var(--s6)
+    }
+
+    .tabs {
+      display: flex;
+      gap: var(--s1);
+      flex-wrap: wrap
+    }
+
+    .tab {
+      font-size: var(--xs);
+      font-weight: 500;
+      padding: var(--s1) var(--s3);
+      border-radius: var(--rfull);
+      color: var(--txm);
+      transition: background var(--tr), color var(--tr)
+    }
+
+    .tab:hover {
+      background: var(--surfoff);
+      color: var(--tx)
+    }
+
+    .tab.on {
+      background: var(--prihl);
+      color: var(--pri)
+    }
+
+    .tab.warn.on {
+      background: var(--warnhl);
+      color: var(--warn)
+    }
+
+    .tw {
+      overflow-x: auto;
+      max-height: 380px;
+      overflow-y: auto
+    }
+
+    .tw::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    .tw::-webkit-scrollbar-track {
+      background: var(--bg)
+    }
+
+    .tw::-webkit-scrollbar-thumb {
+      background: var(--bord);
+      border-radius: 3px
+    }
+
+    th {
+      font-size: var(--xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--txm);
+      padding: var(--s3) var(--s4);
+      text-align: left;
+      background: var(--surfoff);
+      border-bottom: 1px solid var(--div);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      white-space: nowrap
+    }
+
+    td {
+      font-size: var(--xs);
+      padding: var(--s2) var(--s4);
+      border-bottom: 1px solid var(--div);
+      font-family: var(--fm);
+      color: var(--txm);
+      white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: var(--surfoff)
+    }
+
+    .tc {
+      color: var(--tx);
+      font-family: var(--fb);
+      font-weight: 500
+    }
+
+    .tm {
+      color: var(--org)
+    }
+
+    .ts {
+      color: var(--pri)
+    }
+
+    .tu {
+      color: var(--warn)
+    }
+
+    .conf {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px
+    }
+
+    .conf-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .conf-trakt .conf-dot {
+      background: var(--trakt)
+    }
+
+    .conf-tvmaze .conf-dot {
+      background: var(--ok)
+    }
+
+    .conf-manual .conf-dot {
+      background: var(--txm)
+    }
+
+    .conf-auto .conf-dot {
+      background: var(--txf)
+    }
+
+    .conf-ambig .conf-dot {
+      background: var(--warn)
+    }
+
+    .rc {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: var(--rfull);
+      border: 1px solid var(--bord);
+      background: transparent;
+      color: var(--txm);
+      cursor: pointer;
+      transition: all var(--tr);
+      font-family: var(--fb)
+    }
+
+    .rc:hover {
+      background: var(--pri);
+      color: #fff;
+      border-color: var(--pri)
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--s2);
+      font-size: var(--sm);
+      font-weight: 500;
+      padding: var(--s2) var(--s5);
+      border-radius: var(--rmd);
+      border: 1px solid transparent;
+      transition: all var(--tr);
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    .btn-p {
+      background: var(--pri);
+      color: #fff
+    }
+
+    .btn-p:hover {
+      background: var(--prih)
+    }
+
+    .btn-trakt {
+      background: var(--trakt);
+      color: #fff
+    }
+
+    .btn-trakt:hover {
+      background: color-mix(in oklch, var(--trakt) 80%, black)
+    }
+
+    .btn-s {
+      background: var(--surfoff);
+      color: var(--tx);
+      border-color: var(--bord)
+    }
+
+    .btn-s:hover {
+      background: var(--div)
+    }
+
+    .btn-g {
+      color: var(--txm)
+    }
+
+    .btn-g:hover {
+      background: var(--surfoff);
+      color: var(--tx)
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      pointer-events: none
+    }
+
+    .bgroup {
+      display: flex;
+      gap: var(--s3);
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    summary {
+      cursor: pointer;
+      font-size: var(--sm);
+      color: var(--txm);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: var(--s2);
+      padding: var(--s3) 0;
+      user-select: none;
+      transition: color var(--tr)
+    }
+
+    summary:hover {
+      color: var(--tx)
+    }
+
+    summary::-webkit-details-marker {
+      display: none
+    }
+
+    .sarr {
+      transition: transform var(--tr)
+    }
+
+    details[open] .sarr {
+      transform: rotate(90deg)
+    }
+
+    .isteps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s4)
+    }
+
+    .istep {
+      display: flex;
+      gap: var(--s4)
+    }
+
+    .istep-n {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--rfull);
+      flex-shrink: 0;
+      background: var(--prihl);
+      color: var(--pri);
+      font-size: var(--xs);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .istep-b {
+      padding-top: var(--s1)
+    }
+
+    .istep-t {
+      font-weight: 600;
+      font-size: var(--sm);
+      margin-bottom: 2px
+    }
+
+    .istep-d {
+      font-size: var(--xs);
+      color: var(--txm);
+      line-height: 1.5
+    }
+
+    code {
+      font-family: var(--fm);
+      font-size: .9em;
+      background: var(--surfoff);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--pri)
+    }
+
+    .empty {
+      text-align: center;
+      padding: var(--s12) var(--s8);
+      color: var(--txm)
+    }
+
+    .empty svg {
+      margin: 0 auto var(--s4);
+      color: var(--txf)
+    }
+
+    .empty-t {
+      font-weight: 600;
+      color: var(--tx);
+      margin-bottom: var(--s2)
+    }
+
+    .empty p {
+      font-size: var(--sm);
+      max-width: 38ch;
+      margin: 0 auto
+    }
+
+    @keyframes fi {
+      from {
+        opacity: 0;
+        transform: translateY(-4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .ani {
+      animation: fi .25s ease
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+    }
+
+    .pulsing {
+      animation: pulse 1.5s ease infinite
+    }
+
+    /* TRAKT DIRECT IMPORT */
+    .trakt-import-card {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rxl);
+      overflow: hidden;
+      margin-top: var(--s4)
+    }
+
+    .trakt-import-hd {
+      padding: var(--s4) var(--s6);
+      border-bottom: 1px solid var(--div);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s4);
+      flex-wrap: wrap
+    }
+
+    .trakt-import-hd-left {
+      display: flex;
+      align-items: center;
+      gap: var(--s3)
+    }
+
+    .trakt-import-title {
+      font-size: var(--base);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--s2)
+    }
+
+    .badge-local {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--rfull);
+      background: var(--okhl);
+      color: var(--ok);
+      border: 1px solid color-mix(in oklch, var(--ok) 25%, transparent)
+    }
+
+    .trakt-import-body {
+      padding: var(--s5) var(--s6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s4)
+    }
+
+    .import-step {
+      display: flex;
+      flex-direction: column;
+      gap: var(--s4)
+    }
+
+    .device-code-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--s4);
+      padding: var(--s6);
+      background: var(--surfoff);
+      border-radius: var(--rlg);
+      border: 1px solid var(--bord);
+      text-align: center
+    }
+
+    .device-code {
+      font-family: var(--fm);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      color: var(--trakt);
+      background: var(--trakthl);
+      padding: var(--s3) var(--s6);
+      border-radius: var(--rmd);
+      border: 2px solid color-mix(in oklch, var(--trakt) 30%, transparent)
+    }
+
+    .device-instructions {
+      font-size: var(--sm);
+      color: var(--txm);
+      line-height: 1.6
+    }
+
+    .device-instructions a {
+      color: var(--trakt);
+      font-weight: 600;
+      text-decoration: none
+    }
+
+    .device-instructions a:hover {
+      text-decoration: underline
+    }
+
+    .device-waiting {
+      display: flex;
+      align-items: center;
+      gap: var(--s2);
+      font-size: var(--xs);
+      color: var(--txm)
+    }
+
+    .dot-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--trakt);
+      animation: pulse 1.2s ease infinite;
+      flex-shrink: 0
+    }
+
+    .import-connected {
+      display: flex;
+      align-items: center;
+      gap: var(--s3);
+      padding: var(--s3) var(--s4);
+      background: var(--okhl);
+      border: 1px solid color-mix(in oklch, var(--ok) 25%, transparent);
+      border-radius: var(--rmd)
+    }
+
+    .import-results {
+      background: var(--surfoff);
+      border-radius: var(--rlg);
+      padding: var(--s4) var(--s5);
+      font-size: var(--xs);
+      font-family: var(--fm);
+      display: flex;
+      flex-direction: column;
+      gap: var(--s2)
+    }
+
+    .import-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--s2) 0;
+      border-bottom: 1px solid var(--div)
+    }
+
+    .import-stat-row:last-child {
+      border-bottom: none
+    }
+
+    .import-stat-label {
+      color: var(--txm)
+    }
+
+    .import-stat-val {
+      font-weight: 600;
+      color: var(--tx)
+    }
+
+    .import-stat-val.ok {
+      color: var(--ok)
+    }
+
+    .import-stat-val.skip {
+      color: var(--warn)
+    }
+
+    .import-log {
+      font-size: var(--xs);
+      color: var(--txf);
+      font-family: var(--fm);
+      max-height: 100px;
+      overflow-y: auto;
+      margin-top: var(--s2)
+    }
+
+    .import-log::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .import-log::-webkit-scrollbar-thumb {
+      background: var(--bord);
+      border-radius: 2px
+    }
+
+    footer {
+      border-top: 1px solid var(--bord);
+      padding: var(--s5) var(--s6);
+      text-align: center;
+      font-size: var(--xs);
+      color: var(--txf)
+    }
+
+    footer a {
+      color: var(--pri);
+      text-decoration: none
+    }
+
+    footer a:hover {
+      text-decoration: underline
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    @media(max-width:680px) {
+      main {
+        padding: var(--s6) var(--s4);
+        gap: var(--s6)
+      }
+
+      .bgroup {
+        flex-direction: column
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .card-hd {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .file-guide {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="var(--trakt)" opacity="0.15" />
+          <rect x="4" y="9" width="10" height="8" rx="1.5" stroke="var(--trakt)" stroke-width="1.5" />
+          <circle cx="9" cy="17" r="1" fill="var(--trakt)" />
+          <path d="M17 13h3M17 16h5M17 19h4" stroke="var(--txf)" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M22 16l4 0M24 14l2 2-2 2" stroke="var(--trakt)" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        <span class="logo-text">TV Time → Trakt <span class="logo-sub">Convertisseur</span></span>
+      </div>
+      <button class="theme-btn" data-tt aria-label="Thème">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>TV Time Liberator → Trakt</h1>
+        <p>Glissez <strong>plusieurs fichiers à la fois</strong> — l'app les reconnaît automatiquement par nom et
+          fusionne tout en un seul export propre.</p>
+      </section>
+
+      <!-- GUIDE FICHIERS LIBERATOR -->
+      <section>
+        <div class="slbl"><span class="slbl-n">1</span>Vos fichiers TV Time Liberator</div>
+        <div class="file-guide" id="fileGuide">
+          <div class="fg-card" id="fg-movies">
+            <div class="fg-icon">🎬</div>
+            <div>
+              <div class="fg-name">movies.json</div>
+              <div class="fg-desc">Tous vos films visionnés avec date</div><span class="fg-badge badge-movie">Films →
+                Trakt</span>
+            </div>
+          </div>
+          <div class="fg-card" id="fg-shows">
+            <div class="fg-icon">📺</div>
+            <div>
+              <div class="fg-name">shows.json</div>
+              <div class="fg-desc">Épisodes de séries et animes</div><span class="fg-badge badge-show">Séries →
+                Trakt</span>
+            </div>
+          </div>
+          <div class="fg-card" id="fg-favorites">
+            <div class="fg-icon">⭐</div>
+            <div>
+              <div class="fg-name">favorites.json / .csv</div>
+              <div class="fg-desc">Vos contenus marqués favoris</div><span
+                class="fg-badge badge-extra">Classifiable</span>
+            </div>
+          </div>
+          <div class="fg-card" id="fg-watchlist">
+            <div class="fg-icon">📋</div>
+            <div>
+              <div class="fg-name">watchlist.csv</div>
+              <div class="fg-desc">Liste "à regarder"</div><span class="fg-badge badge-extra">Watchlist Trakt</span>
+            </div>
+          </div>
+          <div class="fg-card" id="fg-lists">
+            <div class="fg-icon">📑</div>
+            <div>
+              <div class="fg-name">lists.json</div>
+              <div class="fg-desc">Listes personnalisées</div><span class="fg-badge badge-extra">Optionnel</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- API KEY -->
+      <section>
+        <div class="slbl"><span class="slbl-n">2</span>API de classification (pour les ambigus)</div>
+        <div class="api-panel">
+          <div class="api-tabs">
+            <button class="api-tab trakt-tab on" id="apiTabTrakt" onclick="switchApiTab('trakt')">🔴 Trakt
+              (recommandé)</button>
+            <button class="api-tab" id="apiTabTvmaze" onclick="switchApiTab('tvmaze')">🟢 TVMaze (sans clé)</button>
+          </div>
+          <div class="api-body">
+            <div class="api-pane on" id="paneTrakt">
+              <div class="api-desc trakt"><strong>movies.json</strong> et <strong>shows.json</strong> sont déjà
+                correctement typés — pas besoin de clé pour eux. La clé Trakt est utile uniquement si
+                <strong>favorites.json</strong> ou <strong>watchlist.csv</strong> contiennent des entrées ambiguës. <a
+                  href="https://trakt.tv/oauth/applications/new" target="_blank" rel="noopener"
+                  style="color:var(--trakt)">Créer un Client ID gratuit →</a>
+              </div>
+              <div class="field">
+                <label for="traktKey">Client ID Trakt <span
+                    style="color:var(--txf);font-weight:400">(optionnel)</span></label>
+                <div class="input-wrap">
+                  <input type="password" id="traktKey" placeholder="64 caractères hex…">
+                  <button class="toggle-vis" onclick="toggleVis('traktKey',this)">Afficher</button>
+                  <button class="toggle-vis" onclick="testTraktKey()" id="btnTestKey">Tester</button>
+                </div>
+                <div id="keyTestResult"
+                  style="display:none;margin-top:var(--s2);font-size:var(--xs);padding:var(--s2) var(--s3);border-radius:var(--rmd);">
+                </div>
+              </div>
+            </div>
+            <div class="api-pane" id="paneTvmaze">
+              <div class="api-desc tvmaze">Gratuit, sans clé. Identifie uniquement les séries. Les films non trouvés
+                dans TVMaze resteront "inconnus".</div>
+              <p style="font-size:var(--sm);color:var(--txm)">Aucune configuration requise.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DROP ZONE MULTI-FICHIERS -->
+      <section>
+        <div class="slbl"><span class="slbl-n">3</span>Glissez vos fichiers (plusieurs à la fois)</div>
+        <div class="drop" id="drop">
+          <input type="file" id="fi" accept=".csv,.json" multiple>
+          <div class="drop-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg></div>
+          <div class="drop-title">Glissez movies.json + shows.json ici</div>
+          <div class="drop-sub">ou cliquez pour sélectionner plusieurs fichiers</div>
+          <div class="drop-tags"><span class="tag">movies.json</span><span class="tag">shows.json</span><span
+              class="tag">favorites.json</span><span class="tag">watchlist.csv</span></div>
+          <div class="drop-tip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>Multi-sélection supportée — glissez tous vos fichiers en une fois</div>
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <div id="res" class="hidden">
+
+        <!-- LOADED FILES -->
+        <div id="loadedWrap" style="margin-bottom:var(--s4)">
+          <div class="slbl" style="margin-bottom:var(--s2)">Fichiers chargés</div>
+          <div class="loaded-files" id="loadedFiles"></div>
+        </div>
+
+        <!-- NOTICE -->
+        <div id="notice" class="notice info ani" style="margin-bottom:var(--s4)">
+          <div class="notice-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg></div>
+          <div>
+            <div class="ttl" id="nTitle"></div>
+            <div id="nDesc"></div>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats ani" style="margin-bottom:var(--s4)">
+          <div class="stat total">
+            <div class="stat-val" id="sTotal">0</div>
+            <div class="stat-lbl">Total</div>
+          </div>
+          <div class="stat movies">
+            <div class="stat-val" id="sMovies">0</div>
+            <div class="stat-lbl">Films</div>
+          </div>
+          <div class="stat shows">
+            <div class="stat-val" id="sShows">0</div>
+            <div class="stat-lbl">Séries</div>
+          </div>
+          <div class="stat ambig">
+            <div class="stat-val" id="sAmbig">0</div>
+            <div class="stat-lbl">Inconnus</div>
+          </div>
+        </div>
+
+        <!-- CLASSIF PANEL -->
+        <div class="classif-panel ani" id="classifPanel" style="margin-bottom:var(--s4)">
+          <div class="classif-hd">
+            <div class="classif-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              Classification automatique
+            </div>
+            <div class="src-badges" id="classifStatsBadges"></div>
+          </div>
+          <div class="classif-body">
+            <div class="classif-actions">
+              <button class="btn btn-trakt" id="btnClassifAmbig" onclick="startClassify('ambig')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                Classifier les inconnus (<span id="ambigCount">0</span>)
+              </button>
+              <button class="btn btn-s" id="btnClassifAll" onclick="startClassify('all')">Tout re-classifier</button>
+              <button class="btn btn-g" id="btnStop" onclick="stopClassify()" style="display:none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                </svg>
+                Arrêter
+              </button>
+            </div>
+            <div id="progWrap" class="prog-wrap hidden">
+              <div class="prog-top">
+                <span id="progLabel" class="pulsing">Initialisation…</span>
+                <span id="progCount" style="font-variant-numeric:tabular-nums">0 / 0</span>
+              </div>
+              <div class="prog-bar-bg">
+                <div class="prog-bar" id="progBar"></div>
+              </div>
+              <div class="prog-log" id="progLog"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="card ani">
+          <div class="card-hd">
+            <span class="card-title">Aperçu</span>
+            <div class="tabs">
+              <button class="tab on" id="tAll" onclick="switchTab('all')">Tout</button>
+              <button class="tab" id="tMovies" onclick="switchTab('movies')">🎬 Films</button>
+              <button class="tab" id="tShows" onclick="switchTab('shows')">📺 Séries</button>
+              <button class="tab warn" id="tAmbig" onclick="switchTab('ambig')">⚠️ Inconnus</button>
+            </div>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Type</th>
+                  <th>Origine</th>
+                  <th>Titre</th>
+                  <th>S/E</th>
+                  <th>Année</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- EXPORT -->
+        <div class="card ani" style="margin-top:var(--s4)">
+          <div class="card-hd"><span class="card-title">Exporter pour Trakt</span></div>
+          <div class="card-body">
+            <div class="bgroup">
+              <button class="btn btn-trakt" id="bM" onclick="dl('movies')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Films (<span id="bMc">0</span>)
+              </button>
+              <button class="btn btn-trakt" id="bS" onclick="dl('shows')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Séries / Animes (<span id="bSc">0</span>)
+              </button>
+              <button class="btn btn-s" onclick="dl('all')">Tout en un</button>
+              <button class="btn btn-g" onclick="reset()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                </svg>
+                Recommencer
+              </button>
+            </div>
+            <p style="font-size:var(--xs);color:var(--txm);margin-top:var(--s4)">
+              ℹ️ <strong>trakt.tv → Paramètres → Importer → CSV</strong>. Importez films et séries séparément. Les
+              doublons entre fichiers sont automatiquement supprimés.
+            </p>
+          </div>
+        </div>
+
+        <!-- IMPORT DIRECT TRAKT -->
+        <div class="trakt-import-card ani">
+          <div class="trakt-import-hd">
+            <div class="trakt-import-hd-left">
+              <div class="trakt-import-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Import direct sur Trakt
+              </div>
+              <span class="badge-local">100% local</span>
+            </div>
+            <span style="font-size:var(--xs);color:var(--txm)">Nécessite Client ID + Client Secret</span>
+          </div>
+          <div class="trakt-import-body">
+
+            <!-- STATE: auth form -->
+            <div class="import-step" id="impStepAuth">
+              <div class="api-desc trakt" style="font-size:var(--sm)">
+                L'import direct utilise l'API Trakt. En plus du <strong>Client ID</strong> (déjà renseigné à l'étape 2),
+                il faut le <strong>Client Secret</strong> de votre app Trakt. Les deux sont visibles sur <a
+                  href="https://trakt.tv/oauth/applications" target="_blank" rel="noopener"
+                  style="color:var(--trakt)">trakt.tv/oauth/applications →</a>. Rien n'est jamais envoyé ailleurs — tout
+                tourne dans votre navigateur.
+              </div>
+              <div class="field">
+                <label for="traktSecret">Client Secret <span style="color:var(--txf);font-weight:400">(64
+                    hex)</span></label>
+                <div class="input-wrap">
+                  <input type="password" id="traktSecret" placeholder="Client Secret de votre app Trakt…">
+                  <button class="toggle-vis" onclick="toggleVis('traktSecret',this)">Afficher</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap">
+                <button class="btn btn-trakt" onclick="startDeviceAuth()" id="btnConnectTrakt">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
+                  Se connecter à Trakt
+                </button>
+                <span id="impAuthError" style="font-size:var(--xs);color:var(--err);display:none"></span>
+              </div>
+            </div>
+
+            <!-- STATE: device code waiting -->
+            <div class="import-step hidden" id="impStepDevice">
+              <div class="device-code-box">
+                <div class="device-instructions">
+                  Ouvrez <a id="devVerifyLink" href="https://trakt.tv/activate" target="_blank"
+                    rel="noopener">trakt.tv/activate</a> et entrez ce code :
+                </div>
+                <div class="device-code" id="devCode">——</div>
+                <div class="device-waiting">
+                  <span class="dot-pulse"></span>
+                  En attente de validation sur Trakt…
+                  <span id="devExpiry" style="margin-left:var(--s2)"></span>
+                </div>
+                <button class="btn btn-s" onclick="cancelDeviceAuth()" style="margin-top:var(--s2)">Annuler</button>
+              </div>
+            </div>
+
+            <!-- STATE: connected, ready to import -->
+            <div class="import-step hidden" id="impStepReady">
+              <div class="import-connected">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <span style="font-size:var(--sm);color:var(--ok);font-weight:600">Connecté à Trakt</span>
+                <span id="impConnectedUser" style="font-size:var(--xs);color:var(--txm);margin-left:auto"></span>
+                <button class="btn btn-g" onclick="disconnectTrakt()"
+                  style="font-size:var(--xs);padding:var(--s1) var(--s3)">Déconnecter</button>
+              </div>
+              <div style="display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center">
+                <button class="btn btn-trakt" onclick="importToTrakt()" id="btnImport">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="8 17 12 21 16 17" />
+                    <line x1="12" y1="12" x2="12" y2="21" />
+                    <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29" />
+                  </svg>
+                  <span id="btnImportLabel">Importer sur Trakt</span>
+                </button>
+                <button class="btn btn-s" onclick="smartCleanWatchlist()" id="btnSmartClean" style="border-color:var(--warn);color:var(--warn)">
+                  🧹 Nettoyer Watchlist (déjà vues)
+                </button>
+                <button class="btn btn-s" onclick="clearWatchlist()" id="btnClearWL" style="border-color:var(--err);color:var(--err)">
+                  🗑️ Vider Watchlist Trakt
+                </button>
+                <button class="btn btn-s" onclick="nukeTrakt()" id="btnNuke" style="border-color:#c0392b;color:#c0392b;background:rgba(192,57,43,.08)">
+                  ☢️ Tout supprimer de Trakt
+                </button>
+                <span style="font-size:var(--xs);color:var(--txm)" id="impCountLabel"></span>
+              </div>
+            </div>
+
+            <!-- Progress import -->
+            <div id="impProgWrap" class="prog-wrap hidden" style="margin-top:var(--s2)">
+              <div class="prog-top">
+                <span id="impProgLabel" class="pulsing">Envoi en cours…</span>
+                <span id="impProgCount" style="font-variant-numeric:tabular-nums"></span>
+              </div>
+              <div class="prog-bar-bg">
+                <div class="prog-bar" id="impProgBar" style="background:var(--ok)"></div>
+              </div>
+              <div id="impEtaBar" style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:11px;color:var(--txm);min-height:16px">
+                <span id="impEtaLabel"></span>
+                <span id="impEtaClock" style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--tx)"></span>
+              </div>
+              <div class="import-log" id="impLog"></div>
+            </div>
+
+            <!-- Results -->
+            <div id="impResults" class="hidden">
+              <div class="import-results" id="impResultsBody"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div id="empty">
+          <div class="empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 3l-4 4-4-4" />
+            </svg>
+            <div class="empty-t">Glissez vos fichiers Liberator</div>
+            <p>movies.json + shows.json sont les fichiers principaux. Vous pouvez aussi ajouter favorites et watchlist.
+            </p>
+          </div>
+        </div>
+    
+    <div id="ppModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center">
+      <div style="background:var(--surf);border:1px solid var(--bord);border-radius:var(--rxl);padding:var(--s6);max-width:440px;width:90%;box-shadow:var(--shlg)">
+        <div id="ppModalMsg" style="font-size:var(--sm);color:var(--tx);white-space:pre-wrap;margin-bottom:var(--s5);line-height:1.6"></div>
+        <div style="display:flex;gap:var(--s3);justify-content:flex-end">
+          <button id="ppCancel" class="btn btn-s">Annuler</button>
+          <button id="ppOk" class="btn btn-trakt">Confirmer</button>
+        </div>
+      </div>
+    </div>
+  </main>
+    <footer>
+      100% local · <a href="https://trakt.tv/oauth/applications/new" target="_blank" rel="noopener">Client ID Trakt
+        gratuit</a> · <a href="https://trakt.tv/settings/import" target="_blank" rel="noopener">Importer sur Trakt</a> ·
+      <a href="https://github.com/Hobo-Ware/tv-time-liberator" target="_blank" rel="noopener">TV Time Liberator</a>
+    </footer>
+  </div>
+
+  <script>
+    /* THEME */
+    (function () {
+      const b = document.querySelector('[data-tt]'), r = document.documentElement;
+      let d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'; r.setAttribute('data-theme', d);
+      const sun = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+      const moon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      const u = () => b && (b.innerHTML = d === 'dark' ? sun : moon); u();
+      b && b.addEventListener('click', () => { d = d === 'dark' ? 'light' : 'dark'; r.setAttribute('data-theme', d); u(); });
+    })();
+    function toggleVis(id, btn) { const i = document.getElementById(id); i.type = i.type === 'password' ? 'text' : 'password'; btn.textContent = i.type === 'password' ? 'Afficher' : 'Masquer'; }
+
+    /* STATE */
+    let entries = [], currentTab = 'all', classifyAbort = false, currentApi = 'trakt';
+    let loadedFileNames = [];
+
+    /* API TAB */
+    function switchApiTab(api) {
+      currentApi = api;
+      ['Trakt', 'Tvmaze'].forEach(t => { document.getElementById('apiTab' + t).classList.toggle('on', t.toLowerCase() === api); document.getElementById('pane' + t).classList.toggle('on', t.toLowerCase() === api); });
+    }
+
+    /* FILENAME → TYPE HINT */
+    function fnHint(n) {
+      const f = (n || '').toLowerCase();
+      if (/^movies/.test(f) || /\bmovie\b/.test(f)) return 'movie';
+      if (/^shows/.test(f) || /\bshow\b/.test(f) || /\banime\b/.test(f)) return 'show';
+      if (/^favorites/.test(f) || /\bfavorite\b/.test(f)) return 'auto';
+      if (/^watchlist/.test(f)) return 'auto';
+      if (/^lists/.test(f)) return 'skip';
+      return 'auto';
+    }
+
+    /* FILE GUIDE HIGHLIGHT */
+    function highlightGuide(name) {
+      const n = name.toLowerCase();
+      const map = { 'fg-movies': /movie/, 'fg-shows': /show|anime/, 'fg-favorites': /favorite/, 'fg-watchlist': /watchlist/, 'fg-lists': /lists/ };
+      Object.entries(map).forEach(([id, re]) => { const el = document.getElementById(id); if (el) el.classList.toggle('active', re.test(n)); });
+    }
+
+    /* DROP */
+    const drop = document.getElementById('drop'), fi = document.getElementById('fi');
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); loadFiles(e.dataTransfer.files); });
+    fi.addEventListener('change', () => loadFiles(fi.files));
+
+    async function loadFiles(fileList) {
+      if (!fileList || !fileList.length) return;
+      const arr = Array.from(fileList);
+      for (const f of arr) {
+        if (loadedFileNames.includes(f.name)) continue; // skip duplicate
+        const hint = fnHint(f.name);
+        if (hint === 'skip') { addChip(f.name, 'warn', 'lists.json ignoré (non importable dans Trakt)'); continue; }
+        const text = await f.text();
+        try {
+          const res = f.name.toLowerCase().endsWith('.json') ? parseJSON(text, f.name, hint) : parseCSV(text, f.name, hint);
+          entries.push(...res.entries);
+          loadedFileNames.push(f.name);
+          addChip(f.name, 'ok', res.entries.length + ' entrées');
+          highlightGuide(f.name);
+        } catch (e) { addChip(f.name, 'warn', 'Erreur: ' + e.message); }
+      }
+      deduplicateEntries();
+      showResults();
+    }
+
+    function addChip(name, cls, info) {
+      const w = document.getElementById('loadedFiles');
+      const ch = document.createElement('div');
+      ch.className = 'file-chip ' + cls;
+      ch.id = 'chip-' + name.replace(/[^a-z0-9]/gi, '_');
+      ch.innerHTML = `<span>${name}</span><span style="color:var(--txm)">${info}</span><button class="chip-rm" onclick="removeFile('${name}')" title="Retirer">×</button>`;
+      w.appendChild(ch);
+    }
+    function removeFile(name) {
+      entries = entries.filter(e => e._file !== name);
+      loadedFileNames = loadedFileNames.filter(n => n !== name);
+      const chip = document.getElementById('chip-' + name.replace(/[^a-z0-9]/gi, '_'));
+      if (chip) chip.remove();
+      if (entries.length > 0) showResults(); else reset();
+    }
+
+    /* DEDUP: same title + type + watched_at */
+    function deduplicateEntries() {
+      const seen = new Set();
+      entries = entries.filter(e => {
+        const key = [e.rawTitle, e.type, e.watched_at || '', e.season || '', e.episode || ''].join('|');
+        if (seen.has(key)) return false; seen.add(key); return true;
+      });
+    }
+
+    /* JSON PARSER */
+    function parseJSON(raw, name, hint) {
+      const data = JSON.parse(raw);
+      let objs = [];
+      if (Array.isArray(data)) objs = data;
+      else if (data?.data?.objects) objs = data.data.objects;
+      else if (Array.isArray(data?.data)) objs = data.data;
+      else if (Array.isArray(data?.objects)) objs = data.objects;
+      else for (const k of Object.keys(data)) { if (Array.isArray(data[k]) && data[k].length) { objs = data[k]; break; } }
+      const out = objs.map(o => parseJSONObj(o, hint, name)).filter(Boolean);
+      return { entries: out };
+    }
+    function parseJSONObj(o, hint, fname) {
+      const meta = o.meta || o.movie || o.show || o.episode || {};
+      const title = meta.name || meta.title || o.name || o.title || o.movie_name || o.show_name || null;
+      if (!title) return null;
+      const watched = o.watched_at || o.watchedAt || o.watched_date || o.created_at || o.date || null;
+      const rawT = (meta.item_type || meta.itemType || meta.type || o.type || o.item_type || o.entity_type || '').toLowerCase();
+      let type, src = 'auto';
+      if (hint === 'movie') { type = 'movie'; src = 'filename'; }
+      else if (hint === 'show') { type = 'episode'; src = 'filename'; }
+      else if (/movie|film/.test(rawT)) { type = 'movie'; }
+      else if (/episode|show|serie|anime/.test(rawT)) { type = 'episode'; }
+      else if (o.episode_season_number != null || o.season != null) { type = 'episode'; }
+      else { type = 'ambiguous'; src = 'ambig'; }
+      const rd = meta.first_release_date || meta.release_date || meta.year || o.first_release_date || null;
+      let year = null; if (rd) { const m = String(rd).match(/(\d{4})/); if (m) year = +m[1]; }
+      const season = o.episode_season_number != null ? +o.episode_season_number : o.season != null ? +o.season : null;
+      const episode = o.episode_number != null ? +o.episode_number : o.episode != null ? +o.episode : null;
+      return { type, src, title: type === 'movie' ? title : null, show: type !== 'movie' ? title : null, rawTitle: title, season, episode, year, watched_at: fmtDate(watched), _file: fname };
+    }
+
+    /* CSV PARSER */
+    function parseCSV(raw, name, hint) {
+      const lines = raw.trim().split(/\r?\n/);
+      if (lines.length < 2) return { entries: [] };
+      const sep = lines[0].includes('\t') ? '\t' : ',';
+      const hdrs = csvLine(lines[0], sep).map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+      const isGDPR = hdrs.includes('created_at') && (hdrs.includes('tv_show_title') || hdrs.includes('type'));
+      const ci = n => hdrs.findIndex(h => h === n || h.replace(/[_\s]/g, '') === n.replace(/[_\s]/g, ''));
+      const out = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const cols = csvLine(lines[i], sep);
+        const g = n => { const idx = ci(n); return idx >= 0 && idx < cols.length ? cols[idx].trim().replace(/^["']|["']$/g, '') : null; };
+        const rawT = (g('type') || g('item_type') || '').toLowerCase();
+        const title = g('tv_show_title') || g('name') || g('title') || g('movie_name') || cols[0] || '';
+        if (!title.trim()) continue;
+        const season = g('episode_season_number') || g('season_number') || g('season');
+        const episode = g('episode_number') || g('episode');
+        const watchedAt = g('created_at') || g('watched_at') || g('date');
+        const yr = g('year') || g('release_date');
+        let year = null; if (yr) { const m = yr.match(/(\d{4})/); if (m) year = +m[1]; }
+        let type, src = 'auto';
+        if (hint === 'movie') { type = 'movie'; src = 'filename'; }
+        else if (hint === 'show') { type = 'episode'; src = 'filename'; }
+        else if (/movie|film/.test(rawT)) { type = 'movie'; }
+        else if (/episode|show|serie|anime/.test(rawT)) { type = 'episode'; }
+        else if (rawT === 'watch' && (season || episode)) { type = 'episode'; }
+        else if (rawT === 'watch' && !season && !episode) { type = 'movie'; }
+        else if (season || episode) { type = 'episode'; }
+        else if (isGDPR && !season && !episode) { type = 'movie'; }
+        else { type = 'ambiguous'; src = 'ambig'; }
+        out.push({ type, src, title: type === 'movie' ? title : null, show: type !== 'movie' ? title : null, rawTitle: title, season: season ? +season : null, episode: episode ? +episode : null, year, watched_at: watchedAt ? fmtDate(watchedAt) : null, _file: name });
+      }
+      return { entries: out };
+    }
+    function csvLine(line, sep) {
+      const r = []; let c = '', q = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { if (q && line[i + 1] === '"') { c += '"'; i++; } else q = !q; }
+        else if (ch === sep && !q) { r.push(c); c = ''; }
+        else c += ch;
+      } r.push(c); return r;
+    }
+    function fmtDate(s) {
+      if (!s) return null; s = String(s).trim();
+      if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s;
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(s)) return s.replace(' ', 'T') + '.000Z';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s + 'T00:00:00.000Z';
+      const d = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (d) return `${d[3]}-${d[2].padStart(2, '0')}-${d[1].padStart(2, '0')}T00:00:00.000Z`;
+      if (/^\d{10}$/.test(s)) return new Date(+s * 1000).toISOString();
+      const dt = new Date(s); return isNaN(dt) ? s : dt.toISOString();
+    }
+
+    /* UI */
+    const ICONS = {
+      ok: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      warn: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    };
+    function setNotice(type, title, desc) {
+      const n = document.getElementById('notice'); n.className = 'notice ' + type;
+      n.querySelector('.notice-icon').innerHTML = ICONS[type] || ICONS.info;
+      document.getElementById('nTitle').textContent = title; document.getElementById('nDesc').textContent = desc;
+    }
+    function showResults() {
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('res').classList.remove('hidden');
+      updateStats(); renderTable(currentTab);
+      const mv = entries.filter(e => e.type === 'movie').length, sh = entries.filter(e => e.type === 'episode').length, am = entries.filter(e => e.type === 'ambiguous').length;
+      setNotice(am > 0 ? 'warn' : 'ok', `${entries.length} entrées chargées`, `${mv} films · ${sh} séries · ${am} à classifier · doublons supprimés automatiquement`);
+    }
+    function updateStats() {
+      const mv = entries.filter(e => e.type === 'movie'), sh = entries.filter(e => e.type === 'episode'), am = entries.filter(e => e.type === 'ambiguous');
+      anim('sTotal', entries.length); anim('sMovies', mv.length); anim('sShows', sh.length); anim('sAmbig', am.length);
+      document.getElementById('bMc').textContent = mv.length; document.getElementById('bSc').textContent = sh.length;
+      document.getElementById('bM').disabled = mv.length === 0; document.getElementById('bS').disabled = sh.length === 0;
+      document.getElementById('ambigCount').textContent = am.length;
+      document.getElementById('btnClassifAmbig').disabled = am.length === 0;
+      document.getElementById('tAmbig').style.display = am.length > 0 ? '' : 'none';
+      const bt = entries.filter(e => e.src === 'trakt').length, bv = entries.filter(e => e.src === 'tvmaze').length, bm = entries.filter(e => e.src === 'manual').length;
+      document.getElementById('classifStatsBadges').innerHTML = (bt || bv || bm) ?
+        `${bt ? `<span class="src-badge src-trakt">Trakt: ${bt}</span>` : ''}${bv ? `<span class="src-badge src-tvmaze">TVMaze: ${bv}</span>` : ''}${bm ? `<span class="src-badge src-manual">Manuel: ${bm}</span>` : ''}` : ''
+      if (traktAccessToken) updateImportCount();
+    }
+    const _animTimers = {};
+    function anim(id, v) { const el = document.getElementById(id); if (_animTimers[id]) clearInterval(_animTimers[id]); let c = 0; const s = Math.max(1, Math.floor(v / 30)); _animTimers[id] = setInterval(() => { c = Math.min(c + s, v); el.textContent = c.toLocaleString('fr-FR'); if (c >= v) { clearInterval(_animTimers[id]); delete _animTimers[id]; } }, 20); }
+
+    /* TABLE */
+    const SH = {
+      auto: '<span class="conf conf-auto"><span class="conf-dot"></span>Fichier</span>',
+      filename: '<span class="conf conf-auto"><span class="conf-dot"></span>Nom</span>',
+      trakt: '<span class="conf conf-trakt"><span class="conf-dot"></span>Trakt</span>',
+      tvmaze: '<span class="conf conf-tvmaze"><span class="conf-dot"></span>TVMaze</span>',
+      manual: '<span class="conf conf-manual"><span class="conf-dot"></span>Manuel</span>',
+      ambig: '<span class="conf conf-ambig"><span class="conf-dot"></span>Inconnu</span>',
+      looking: '<span class="conf conf-ambig pulsing"><span class="conf-dot"></span>⟳</span>'
+    };
+    function renderTable(tab) {
+      const tbody = document.getElementById('tbody');
+      const list = tab === 'movies' ? entries.filter(e => e.type === 'movie') : tab === 'shows' ? entries.filter(e => e.type === 'episode') : tab === 'ambig' ? entries.filter(e => e.type === 'ambiguous') : entries;
+      const LIMIT = 300, shown = list.slice(0, LIMIT);
+      tbody.innerHTML = shown.map((e, i) => {
+        const idx = entries.indexOf(e);
+        const name = e.type === 'movie' ? e.title : (e.show || e.rawTitle || '—');
+        const ep = (e.season != null && e.episode != null) ? `S${String(e.season).padStart(2, '0')}E${String(e.episode).padStart(2, '0')}` : e.season != null ? `S${e.season}` : '—';
+        const dt = e.watched_at ? e.watched_at.split('T')[0] : '—';
+        const [lbl, cls] = e.type === 'movie' ? ['🎬', 'tm'] : e.type === 'episode' ? ['📺', 'ts'] : ['❓', 'tu'];
+        const ficon = e._file ? (e._file.startsWith('movies') ? '🎬' : e._file.startsWith('shows') ? '📺' : e._file.startsWith('fav') ? '⭐' : e._file.startsWith('watch') ? '📋' : '📄') : '';
+        const fl = e._file ? `<span title="${e._file}">${ficon}</span>` : '';
+        const srcBadge = e._file
+          ? (e._file.startsWith('shows') || e._file.startsWith('anime')
+              ? '<span style="color:var(--ok);font-size:11px">📺 Série</span>'
+            : e._file.startsWith('movies')
+              ? '<span style="color:var(--trakt);font-size:11px">🎬 Film</span>'
+            : e._file.startsWith('watchlist')
+              ? '<span style="color:var(--warn);font-size:11px">📋 À voir</span>'
+              : '<span style="color:var(--txm);font-size:11px">📄</span>')
+          : (e.type === 'episode'
+              ? '<span style="color:var(--ok);font-size:11px">📺 Série</span>'
+            : e.type === 'movie'
+              ? '<span style="color:var(--trakt);font-size:11px">🎬 Film</span>'
+              : '<span style="color:var(--warn);font-size:11px">❓ Inconnu</span>');
+        return `<tr id="row${idx}"><td>${i + 1}</td><td class="${cls}">${lbl}</td><td>${SH[e.src] || SH.ambig}</td><td class="tc" title="${name}">${fl} ${name}</td><td>${ep}</td><td>${e.year || '—'}</td><td>${dt}</td><td>${srcBadge}</td></tr>`;
+      }).join('');
+      if (list.length > LIMIT) tbody.innerHTML += `<tr><td colspan="8" style="text-align:center;color:var(--txf);padding:var(--s4)">… et ${(list.length - LIMIT).toLocaleString('fr-FR')} entrées supplémentaires (toutes dans l'export)</td></tr>`;
+      if (list.length === 0) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--txf);padding:var(--s8)">Aucune entrée ici</td></tr>`;
+    }
+    function switchTab(tab) {
+      currentTab = tab;
+      ['all', 'movies', 'shows', 'ambig'].forEach(t => { const el = document.getElementById('t' + t.charAt(0).toUpperCase() + t.slice(1)); if (el) el.classList.remove('on'); });
+      const sel = document.getElementById('t' + tab.charAt(0).toUpperCase() + tab.slice(1)); if (sel) sel.classList.add('on');
+      renderTable(tab);
+    }
+    function rc1(idx, toType) {
+      const e = entries[idx]; const t = toType === 'movie' ? 'movie' : 'episode';
+      const title = e.rawTitle || e.title || e.show || '';
+      entries[idx] = { ...e, type: t, src: 'manual', title: t === 'movie' ? title : null, show: t !== 'movie' ? title : null };
+      updateStats(); renderTable(currentTab);
+    }
+
+    /* API LOOKUPS */
+    async function testTraktKey() {
+      const clientId = document.getElementById('traktKey').value.trim();
+      const res = document.getElementById('keyTestResult');
+      res.style.display = '';
+      if (!clientId) { res.style.background = 'var(--errhl)'; res.style.color = 'var(--err)'; res.textContent = '⚠️ Client ID manquant.'; return; }
+      const btn = document.getElementById('btnTestKey'); btn.disabled = true; btn.textContent = '…';
+      res.style.background = 'var(--surfoff)'; res.style.color = 'var(--txm)'; res.textContent = 'Test en cours…';
+      try {
+        const r = await fetch('https://api.trakt.tv/movies/trending?limit=1', { headers: { 'Content-Type': 'application/json', 'trakt-api-version': '2', 'trakt-api-key': clientId } });
+        if (r.ok) { res.style.background = 'var(--okhl)'; res.style.color = 'var(--ok)'; res.textContent = '✅ Client ID valide — connexion Trakt OK'; }
+        else if (r.status === 401 || r.status === 403) { res.style.background = 'var(--errhl)'; res.style.color = 'var(--err)'; res.textContent = '❌ Client ID invalide (HTTP ' + r.status + ')'; }
+        else { res.style.background = 'var(--warnhl)'; res.style.color = 'var(--warn)'; res.textContent = '⚠️ Réponse inattendue HTTP ' + r.status; }
+      } catch (e) { res.style.background = 'var(--errhl)'; res.style.color = 'var(--err)'; res.textContent = '❌ Erreur réseau : ' + e.message; }
+      btn.disabled = false; btn.textContent = 'Tester';
+    }
+
+    async function lookupTrakt(title, year, clientId) {
+      // Build progressive fallback variants of the title
+      const variants = [title];
+      // Before ' - ' (e.g. "Chainsaw Man - Le film : l'arc Reze" → "Chainsaw Man")
+      const dashIdx = title.indexOf(' - '); if (dashIdx > 0) variants.push(title.slice(0, dashIdx).trim());
+      // Before ' : ' (e.g. "Chainsaw Man : l'arc Reze" → "Chainsaw Man")
+      const colonIdx = title.indexOf(' : '); if (colonIdx > 0 && !variants.includes(title.slice(0, colonIdx).trim())) variants.push(title.slice(0, colonIdx).trim());
+      // Before standard colon
+      const c2 = title.indexOf(': '); if (c2 > 0) { const t = title.slice(0, c2).trim(); if (!variants.includes(t)) variants.push(t); }
+      // Strip special chars (apostrophes, accents kept, but remove extra punctuation)
+      const stripped = title.replace(/[:\-–—]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!variants.includes(stripped)) variants.push(stripped);
+
+      async function trySearch(q, yr) {
+        let url = `https://api.trakt.tv/search/movie,show?query=${encodeURIComponent(q)}&limit=5`;
+        if (yr) url += `&years=${yr}`;
+        const r = await fetch(url, { headers: { 'Content-Type': 'application/json', 'trakt-api-version': '2', 'trakt-api-key': clientId } });
+        if (!r.ok) { if (r.status === 401 || r.status === 403) throw new Error('Client ID invalide'); return null; }
+        const d = await r.json();
+        if (!d || !d.length) return null;
+        const best = d.reduce((a, b) => b.score > a.score ? b : a, d[0]);
+        return { type: best.type === 'movie' ? 'movie' : 'episode', src: 'trakt', match: best.movie?.title || best.show?.title, matchYear: best.movie?.year || best.show?.year, score: best.score };
+      }
+
+      try {
+        for (const v of variants) {
+          // Try with year first, then without if no result
+          if (variants.indexOf(v) > 0) await sleep(120);
+          let res = await trySearch(v, year);
+          if (res) return res;
+          if (year) { res = await trySearch(v, null); if (res) return res; }
+        }
+        return null;
+      } catch (e) { if (e.message?.includes('invalide') || e instanceof TypeError) throw e; return null; }
+    }
+    async function lookupTVMaze(title) {
+      try {
+        const r = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(title)}`);
+        if (!r.ok) return null;
+        const d = await r.json();
+        if (!d || !d.length) return null;
+        if (d[0].score > 0.3) return { type: 'episode', src: 'tvmaze', match: d[0].show.name, score: d[0].score };
+        return null;
+      } catch (e) { if (e instanceof TypeError) throw e; return null; }
+    }
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    // Normalise un titre pour comparaison : ignore ponctuation, casse, &/and
+    function normTitle(t) {
+      return (t||'').toLowerCase()
+        .replace(/[:\-\u2013\u2014]/g,' ').replace(/&/g,'and')
+        .replace(/['"!?,\.\(\)]/g,'').replace(/\s+/g,' ').trim();
+    }
+
+    function setEta(estSec) {
+      const label = document.getElementById('impEtaLabel');
+      const clock = document.getElementById('impEtaClock');
+      if (!label || !clock) return;
+      if (estSec == null) { label.textContent = ''; clock.textContent = ''; return; }
+      const eta = new Date(Date.now() + estSec * 1000);
+      const etaStr = eta.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      label.textContent = '⏱ Durée estimée : ~' + (estSec < 60 ? estSec + 's' : Math.ceil(estSec / 60) + ' min');
+      clock.textContent = 'Fin estimée : ' + etaStr;
+    }
+    function clearEtaBar() { setEta(null); }
+
+    function ppConfirm(msg) {
+      return new Promise(function(resolve) {
+        const modal = document.getElementById('ppModal');
+        document.getElementById('ppModalMsg').textContent = msg;
+        modal.style.display = 'flex';
+        function cleanup(v){ modal.style.display='none'; ok.removeEventListener('click',onOk); no.removeEventListener('click',onNo); resolve(v); }
+        const ok = document.getElementById('ppOk'), no = document.getElementById('ppCancel');
+        function onOk(){ cleanup(true); } function onNo(){ cleanup(false); }
+        ok.addEventListener('click',onOk); no.addEventListener('click',onNo);
+      });
+    }
+
+    async function startClassify(mode) {
+      classifyAbort = false;
+      const api = currentApi;
+      const traktKey = document.getElementById('traktKey').value.trim();
+      if (api === 'trakt' && !traktKey) { alert('Entrez votre Client ID Trakt (étape 2) ou choisissez TVMaze.'); return; }
+      const toProcess = mode === 'ambig' ? entries.map((e, i) => ({ e, i })).filter(({ e }) => e.type === 'ambiguous') : entries.map((e, i) => ({ e, i }));
+      if (!toProcess.length) { alert('Aucune entrée à classifier.'); return; }
+      document.getElementById('progWrap').classList.remove('hidden');
+      document.getElementById('btnStop').style.display = '';
+      document.getElementById('btnClassifAmbig').disabled = true;
+      document.getElementById('btnClassifAll').disabled = true;
+      const log = document.getElementById('progLog'), bar = document.getElementById('progBar'), lbl = document.getElementById('progLabel'), cnt = document.getElementById('progCount');
+      log.innerHTML = ''; lbl.classList.add('pulsing');
+      let done = 0, found = 0, notFound = 0;
+      const total = toProcess.length;
+      const DELAY = api === 'trakt' ? 310 : 260;
+      for (const { e, i } of toProcess) {
+        if (classifyAbort) break;
+        const title = e.rawTitle || e.title || e.show || '';
+        lbl.textContent = `⟳ ${title}`; cnt.textContent = `${done} / ${total}`; bar.style.width = `${Math.round(done / total * 100)}%`;
+        const row = document.getElementById('row' + i); if (row && row.cells[2]) row.cells[2].innerHTML = SH.looking;
+        let result = null;
+        try { result = api === 'trakt' ? await lookupTrakt(title, e.year, traktKey) : await lookupTVMaze(title); }
+        catch (ex) {
+          const isCors = ex instanceof TypeError;
+          const msg = isCors ? 'Erreur réseau — ouvrez le fichier via http://localhost (python -m http.server)' : ex.message;
+          lbl.classList.remove('pulsing'); lbl.textContent = '❌ ' + msg;
+          log.innerHTML += `<div style="color:var(--err);font-weight:600">❌ ${msg}</div>`;
+          log.scrollTop = log.scrollHeight; break;
+        }
+        if (result) {
+          found++; const t = result.type; const nt = title;
+          entries[i] = { ...e, type: t, src: result.src, title: t === 'movie' ? nt : null, show: t !== 'movie' ? nt : null, rawTitle: nt };
+          log.innerHTML += `<div>${t === 'movie' ? '🎬' : '📺'} ${api === 'trakt' ? '🔴' : '🟢'} <b>${title}</b> → ${t === 'movie' ? 'Film' : 'Série'} <span style="color:var(--txf)">(${result.match}${result.matchYear ? `, ${result.matchYear}` : ''})</span></div>`;
+        } else { notFound++; log.innerHTML += `<div style="color:var(--txf)">❓ <b>${title}</b></div>`; }
+        log.scrollTop = log.scrollHeight;
+        if (row) { const up = entries[i]; const [lc, ic] = up.type === 'movie' ? ['tm', '🎬'] : up.type === 'episode' ? ['ts', '📺'] : ['tu', '❓']; if (row.cells[1]) { row.cells[1].className = lc; row.cells[1].textContent = ic; } if (row.cells[2]) row.cells[2].innerHTML = SH[up.src] || SH.ambig; }
+        done++; updateStats(); await sleep(DELAY);
+      }
+      lbl.classList.remove('pulsing'); lbl.textContent = classifyAbort ? '⏹ Arrêté' : '✅ Terminé'; bar.style.width = '100%'; cnt.textContent = `${done} / ${total}`;
+      log.innerHTML += `<div style="margin-top:4px;border-top:1px solid var(--div);padding-top:4px;color:var(--tx)">Classifiés: ${found} · Non trouvés: ${notFound}</div>`;
+      log.scrollTop = log.scrollHeight;
+      document.getElementById('btnStop').style.display = 'none';
+      document.getElementById('btnClassifAmbig').disabled = false; document.getElementById('btnClassifAll').disabled = false;
+      renderTable(currentTab); updateStats();
+    }
+    function stopClassify() { classifyAbort = true; }
+
+    /* ===================== TRAKT DIRECT IMPORT ===================== */
+    let traktAccessToken = null, devicePollTimer = null, devExpiryTimer = null;
+
+    function impShow(id) { ['impStepAuth', 'impStepDevice', 'impStepReady'].forEach(s => { const el = document.getElementById(s); if (el) el.classList.toggle('hidden', s !== id); }); }
+
+    async function startDeviceAuth() {
+      const clientId = document.getElementById('traktKey').value.trim();
+      const clientSecret = document.getElementById('traktSecret').value.trim();
+      const errEl = document.getElementById('impAuthError');
+      errEl.style.display = 'none';
+      if (!clientId) { errEl.textContent = 'Client ID manquant (étape 2).'; errEl.style.display = ''; return; }
+      if (!clientSecret) { errEl.textContent = 'Client Secret manquant.'; errEl.style.display = ''; return; }
+      document.getElementById('btnConnectTrakt').disabled = true;
+      try {
+        const r = await fetch('https://api.trakt.tv/oauth/device/code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_id: clientId }) });
+        if (!r.ok) throw new Error('Erreur Trakt (' + r.status + ')');
+        const d = await r.json();
+        document.getElementById('devCode').textContent = d.user_code;
+        const link = document.getElementById('devVerifyLink'); link.href = d.verification_url; link.textContent = d.verification_url;
+        impShow('impStepDevice');
+        // expiry countdown
+        let remaining = d.expires_in;
+        const expEl = document.getElementById('devExpiry');
+        devExpiryTimer = setInterval(() => { remaining--; expEl.textContent = `(expire dans ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')})`; if (remaining <= 0) clearInterval(devExpiryTimer); }, 1000);
+        // poll
+        const interval = Math.max(d.interval || 5, 5) * 1000;
+        devicePollTimer = setInterval(async () => {
+          try {
+            const pr = await fetch('https://api.trakt.tv/oauth/device/token', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: d.device_code, client_id: clientId, client_secret: clientSecret }) });
+            if (pr.status === 200) {
+              clearInterval(devicePollTimer); clearInterval(devExpiryTimer);
+              const pd = await pr.json(); traktAccessToken = pd.access_token;
+              await fetchTraktUser(clientId);
+              impShow('impStepReady'); updateImportCount();
+            } else if (pr.status === 400) {/* pending, keep polling */ }
+            else { clearInterval(devicePollTimer); clearInterval(devExpiryTimer); cancelDeviceAuth(); alert('Auth Trakt échouée (' + pr.status + '). Recommencez.'); }
+          } catch (e) {/* ignore network errors during poll */ }
+        }, interval);
+      } catch (e) { errEl.textContent = e.message; errEl.style.display = ''; document.getElementById('btnConnectTrakt').disabled = false; }
+    }
+
+    async function fetchTraktUser(clientId) {
+      try {
+        const r = await fetch('https://api.trakt.tv/users/me', { headers: { 'Content-Type': 'application/json', 'trakt-api-version': '2', 'trakt-api-key': clientId, 'Authorization': 'Bearer ' + traktAccessToken } });
+        if (r.ok) { const d = await r.json(); document.getElementById('impConnectedUser').textContent = d.username || ''; }
+      } catch { }
+    }
+
+    function cancelDeviceAuth() {
+      clearInterval(devicePollTimer); clearInterval(devExpiryTimer);
+      traktAccessToken = null; impShow('impStepAuth');
+      document.getElementById('btnConnectTrakt').disabled = false;
+    }
+    function disconnectTrakt() { traktAccessToken = null; impShow('impStepAuth'); document.getElementById('btnConnectTrakt').disabled = false; document.getElementById('impResults').classList.add('hidden'); document.getElementById('impProgWrap').classList.add('hidden'); }
+
+    function updateImportCount() {
+      const mv = entries.filter(e => e.type === 'movie').length, sh = entries.filter(e => e.type === 'episode').length;
+      document.getElementById('impCountLabel').textContent = mv + ' films · ' + sh + ' épisodes à importer';
+      document.getElementById('btnImportLabel').textContent = `Importer ${mv + sh} entrées sur Trakt`;
+    }
+
+
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+
+    function buildTitleVariants(title) {
+      const add = function(t) { t = (t||'').trim(); if (t && !v.includes(t)) v.push(t); };
+      const v = [title];
+      const di = title.search(/ [\-\u2013\u2014] /); if (di > 0) add(title.slice(0, di));
+      const ci = title.indexOf(': '); if (ci > 0) { add(title.slice(0, ci)); add(title.slice(ci + 2)); }
+      const ci2 = title.indexOf(' : '); if (ci2 > 0) add(title.slice(0, ci2));
+      // Supprimer suffixes anime
+      add(title.replace(/\b(OVA|ONA|Movie|The Movie|Special|Arc|\(TV\)|\(Movie\))\b/gi,'').replace(/\s+/g,' ').trim());
+      // Nettoyer ponctuation
+      add(title.replace(/[:\-\u2013\u2014!?'"\u201c\u201d]/g,' ').replace(/\s+/g,' ').trim());
+      // 4 premiers mots
+      const words = title.split(' '); if (words.length > 4) add(words.slice(0,4).join(' '));
+      return v;
+    }
+
+    // Lookup AniList → titre anglais officiel + type (TV / MOVIE) + année
+    async function anilistLookup(title) {
+      const query = `query($s:String){Media(search:$s,type:ANIME){title{romaji english}startDate{year}format}}`;
+      try {
+        const r = await fetch('https://graphql.anilist.co', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ query, variables: { s: title } })
+        });
+        if (!r.ok) return null;
+        const d = await r.json();
+        const m = d?.data?.Media;
+        if (!m) return null;
+        const fmt = (m.format || '').toUpperCase();
+        return {
+          english: m.title?.english || null,
+          romaji:  m.title?.romaji  || null,
+          year:    m.startDate?.year || null,
+          isMovie: fmt === 'MOVIE',
+          isShow:  ['TV','TV_SHORT','ONA','OVA','SPECIAL'].includes(fmt)
+        };
+      } catch { return null; }
+    }
+
+    // Search Trakt — préfère résultats anime/animation via extended=full
+    // Fallback AniList pour titre anglais officiel
+    async function resolveTraktId(title, year, type, clientId) {
+      const searchType = type === 'movie' ? 'movie' : 'show';
+      const allVariants = buildTitleVariants(title);
+
+      // Essai 1 : variantes du titre original avec préférence anime
+      for (const variant of allVariants) {
+        for (const yr of (year ? [year, null] : [null])) {
+          let url = 'https://api.trakt.tv/search/' + searchType + '?query=' + encodeURIComponent(variant) + '&limit=5&extended=full';
+          if (yr) url += '&years=' + yr;
+          try {
+            const r = await fetch(url, { headers: { 'Content-Type': 'application/json', 'trakt-api-version': '2', 'trakt-api-key': clientId } });
+            if (!r.ok) continue;
+            const d = await r.json();
+            if (d && d.length) {
+              // Trier : préférer animation/anime
+              const sorted = d.slice().sort(function(a, b) {
+                const ag = ((a.movie || a.show)?.genres || []).join(' ').toLowerCase();
+                const bg = ((b.movie || b.show)?.genres || []).join(' ').toLowerCase();
+                const aa = /anime|animation/.test(ag), ba = /anime|animation/.test(bg);
+                return (aa === ba) ? 0 : aa ? -1 : 1;
+              });
+              const item = sorted[0].movie || sorted[0].show;
+              if (item?.ids?.trakt) return item.ids;
+            }
+          } catch { /* ignore */ }
+          await sleep(150);
+        }
+      }
+
+      // Essai 2 : AniList pour titre anglais officiel + type précis
+      const al = await anilistLookup(title);
+      if (al) {
+        const alType = al.isMovie ? 'movie' : 'show';
+        const alTitles = [al.english, al.romaji].filter(Boolean);
+        for (const alTitle of alTitles) {
+          let url = 'https://api.trakt.tv/search/' + alType + '?query=' + encodeURIComponent(alTitle) + '&limit=5&extended=full';
+          if (al.year) url += '&years=' + al.year;
+          try {
+            const r = await fetch(url, { headers: { 'Content-Type': 'application/json', 'trakt-api-version': '2', 'trakt-api-key': clientId } });
+            if (!r.ok) continue;
+            const d = await r.json();
+            if (d && d.length) {
+              const sorted = d.slice().sort(function(a, b) {
+                const ag = ((a.movie || a.show)?.genres || []).join(' ').toLowerCase();
+                const bg = ((b.movie || b.show)?.genres || []).join(' ').toLowerCase();
+                return /anime|animation/.test(ag) ? -1 : /anime|animation/.test(bg) ? 1 : 0;
+              });
+              const item = sorted[0].movie || sorted[0].show;
+              if (item?.ids?.trakt) return item.ids;
+            }
+          } catch { }
+          await sleep(150);
+        }
+      }
+      return null;
+    }
+
+    // Group episodes into Trakt's required shows -> seasons -> episodes structure
+    function buildShowsPayload(episodes, flattenSet) {
+      const map = {};
+      for (const e of episodes) {
+        if (e.episode == null) continue;
+        const title = e.show || e.rawTitle || '';
+        const key = title + '|' + (e.year || '');
+        if (!map[key]) map[key] = { title, year: e.year || undefined, seasons: {}, allEps: [] };
+        const s = e.season ?? 0;
+        if (!map[key].seasons[s]) map[key].seasons[s] = [];
+        map[key].seasons[s].push({ season: s, number: e.episode, watched_at: e.watched_at || undefined });
+        map[key].allEps.push({ season: s, number: e.episode, watched_at: e.watched_at || undefined });
+      }
+      return Object.values(map).map(function(show) {
+        // Retry split-cours : flatten en S1 absolu
+        if (flattenSet && flattenSet.has(show.title)) {
+          const sorted = show.allEps.slice().sort(function(a,b){
+            return a.season !== b.season ? a.season-b.season : a.number-b.number;
+          });
+          return { title: show.title, year: show.year,
+            seasons: [{ number: 1, episodes: sorted.map(function(ep,i){
+              return { number: i+1, watched_at: ep.watched_at };
+            })}] };
+        }
+        const sKeys = Object.keys(show.seasons).map(Number);
+        // Fix Nisekoi/TV Time : si uniquement S0, remapper en S1 (TV Time != Trakt specials)
+        if (sKeys.length === 1 && sKeys[0] === 0) {
+          return { title: show.title, year: show.year,
+            seasons: [{ number: 1, episodes: show.seasons[0].map(function(ep){
+              return { number: ep.number, watched_at: ep.watched_at };
+            })}] };
+        }
+        // Si S0 + S1+, garder S0 tel quel (vrais spéciaux regardés) sauf si flatten demandé
+        return { title: show.title, year: show.year,
+          seasons: sKeys.map(function(s){
+            return { number: s, episodes: show.seasons[s].map(function(ep){
+              return { number: ep.number, watched_at: ep.watched_at };
+            })};
+          })
+        };
+      });
+    }
+
+    async function traktFetch(path, method, clientId, body) {
+      const ctrl = new AbortController();
+      const timeout = setTimeout(() => ctrl.abort(), 45000);
+      try {
+        const r = await fetch('https://api.trakt.tv' + path, {
+          method, signal: ctrl.signal,
+          headers: { 'Content-Type': 'application/json', 'trakt-api-version': '2', 'trakt-api-key': clientId, 'Authorization': 'Bearer ' + traktAccessToken },
+          body: body ? JSON.stringify(body) : undefined
+        });
+        return r;
+      } finally { clearTimeout(timeout); }
+    }
+
+    // Send one batch with retry on 420/429, returns parsed JSON or null
+    async function sendBatch(endpoint, payload, clientId, log) {
+      let attempts = 0;
+      while (attempts < 4) {
+        attempts++;
+        let r;
+        try { r = await traktFetch(endpoint, 'POST', clientId, payload); }
+        catch (e) {
+          const msg = e.name === 'AbortError' ? 'Timeout 45s — Trakt trop lent' : e.message;
+          log.innerHTML += `<div style="color:var(--err)">❌ ${msg}</div>`;
+          return null;
+        }
+        if (r.status === 401) return '__unauthorized__';
+        if (r.status === 420) {
+          if (endpoint === '/sync/watchlist') {
+            log.innerHTML += '<div style="color:var(--err)">⚠️ Watchlist Trakt pleine (HTTP 420) — limite de compte atteinte. Utilisez le bouton "Nettoyer la Watchlist" d\'abord.</div>';
+            log.scrollTop = log.scrollHeight;
+            return '__list_limit__';
+          }
+        }
+        if (r.status === 429) {
+          const retryAfter = parseInt(r.headers.get('Retry-After') || '30', 10);
+          const wait = Math.min(Math.max(retryAfter, 10) * attempts, 120);
+          log.innerHTML += `<div style="color:var(--warn)">⏳ Rate limit Trakt. Pause ${wait}s (tentative ${attempts}/4)…</div>`;
+          log.scrollTop = log.scrollHeight;
+          await sleep(wait * 1000);
+          continue;
+        }
+        if (!r.ok) {
+          const t = await r.text();
+          log.innerHTML += `<div style="color:var(--err)">❌ HTTP ${r.status}: ${t.slice(0, 200)}</div>`;
+          return null;
+        }
+        return await r.json();
+      }
+      log.innerHTML += `<div style="color:var(--err)">❌ Abandon après ${attempts} tentatives (rate limit persistant)</div>`;
+      return null;
+    }
+
+    // Retry not_found movies by resolving their Trakt ID first
+    async function retryNotFound(notFoundTitles, type, endpoint, clientId, log) {
+      if (!notFoundTitles.length) return { added: 0, stillNotFound: [] };
+      log.innerHTML += `<div style="color:var(--txm)">🔍 Résolution des ${notFoundTitles.length} éléments non trouvés par ID...</div>`;
+      log.scrollTop = log.scrollHeight;
+      const resolved = [], stillNotFound = [];
+      for (const item of notFoundTitles) {
+        const title = item.title || (item.show && item.show.title) || '?';
+        const year = item.year || (item.show && item.show.year);
+        const ids = await resolveTraktId(title, year, type, clientId);
+        if (ids) {
+          if (type === 'movie') resolved.push({ ids, watched_at: item.watched_at });
+          else resolved.push({ ids });
+        } else {
+          stillNotFound.push(title);
+        }
+        await sleep(300);
+      }
+      if (!resolved.length) return { added: 0, stillNotFound };
+      const retryPayload = type === 'movie' ? { movies: resolved } : { shows: resolved };
+      const d = await sendBatch(endpoint, retryPayload, clientId, log);
+      if (!d || d === '__unauthorized__') return { added: 0, stillNotFound };
+      const added = (d.added?.movies || 0) + (d.added?.episodes || 0) + (d.added?.shows || 0);
+      const nfTitles = [...(d.not_found?.movies || []), ...(d.not_found?.shows || [])].map(x => x.title || '?');
+      return { added, stillNotFound: [...stillNotFound, ...nfTitles] };
+    }
+
+    // ── Main import ────────────────────────────────────────────────────────────
+
+    async function importToTrakt() {
+      if (!traktAccessToken) { alert('Pas connecté.'); return; }
+      const clientId = document.getElementById('traktKey').value.trim();
+      // Routing strict par fichier source (pas par type auto-détecté)
+      // Routing par fichier source (insensible à la casse) avec fallback sur le type
+      const isShowFile      = e => { const f = (e._file||'').toLowerCase(); return /show|anime|serie/.test(f) && !/watchlist/.test(f); };
+      const isMovieFile     = e => { const f = (e._file||'').toLowerCase(); return /movie|film/.test(f) && !/watchlist/.test(f); };
+      const isWatchlistFile = e => { const f = (e._file||'').toLowerCase(); return /watchlist/.test(f); };
+
+      const watchlistAll    = entries.filter(isWatchlistFile);
+      // watchedEpisodes = fichier séries OU type=episode hors watchlist (fallback si nom de fichier inconnu)
+      const watchedEpisodes = entries.filter(e =>
+        !isWatchlistFile(e) && (isShowFile(e) || (!isMovieFile(e) && e.type === 'episode'))
+      );
+      // watchedMovies = fichier films OU type=movie hors watchlist
+      const watchedMovies   = entries.filter(e =>
+        !isWatchlistFile(e) && (isMovieFile(e) || (!isShowFile(e) && e.type === 'movie'))
+      );
+      // Comparaison normalisée : ignore ponctuation, casse, &/and
+      const histShowTitles  = new Set(watchedEpisodes.map(e => normTitle(e.show  || e.rawTitle)));
+      const histMovieTitles = new Set(watchedMovies.map(e =>   normTitle(e.title || e.rawTitle)));
+      // Priorité stricte : type='movie' explicite → wlMovies ; tout le reste → wlShows
+      const watchlistMovies = watchlistAll.filter(e => {
+        const t = normTitle(e.title || e.rawTitle);
+        return t && e.type === 'movie' && !histMovieTitles.has(t);
+      });
+      const wlMovieTitlesSet = new Set(watchlistMovies.map(e => normTitle(e.title || e.rawTitle)));
+      const watchlistShows = watchlistAll.filter(e => {
+        const t = normTitle(e.show || e.title || e.rawTitle);
+        return t && e.type !== 'movie' && !histShowTitles.has(t) && !wlMovieTitlesSet.has(t);
+      });
+      const skippedWL = watchlistAll.length - watchlistShows.length - watchlistMovies.length;
+
+      if (!watchedMovies.length && !watchedEpisodes.length && !watchlistMovies.length && !watchlistShows.length) {
+        alert('Aucune entrée à importer.\nVérifiez que vos fichiers sont bien chargés:\n• shows.json (séries vues)\n• movies.json (films vus)\n• watchlist.csv (à voir)'); return;
+      }
+
+      document.getElementById('btnImport').disabled = true;
+      document.getElementById('impProgWrap').classList.remove('hidden');
+      document.getElementById('impResults').classList.add('hidden');
+      const log = document.getElementById('impLog'), bar = document.getElementById('impProgBar'),
+        lbl = document.getElementById('impProgLabel'), cnt = document.getElementById('impProgCount');
+      log.innerHTML = ''; bar.style.width = '0%'; lbl.classList.add('pulsing');
+
+      {
+        const uShows = new Set(watchedEpisodes.map(e => e.show || e.rawTitle || '')).size;
+        const wlCount = watchlistShows.length + watchlistMovies.length;
+        // Temps estimé : 2s/lot historique + 3s/lot watchlist + 0.5s/ep retryNotFound (max 30)
+        const histBatches = Math.ceil(uShows / 150) + Math.ceil(watchedMovies.length / 150);
+        const wlBatches   = Math.ceil(wlCount / 50);
+        const estSec = histBatches * 4 + wlBatches * 5;
+        setEta(estSec);
+        log.innerHTML =
+          '<div style="border-bottom:1px solid var(--div);padding-bottom:6px;margin-bottom:4px">' +
+          '<b style="color:var(--ok)">📊 Plan d\'import TV Time → Trakt</b><br>' +
+          '<span style="color:var(--txf)">📺 ' + watchedEpisodes.length + ' épisodes (' + uShows + ' séries) → <b>Historique</b></span><br>' +
+          '<span style="color:var(--txf)">🎬 ' + watchedMovies.length + ' films → <b>Historique</b></span><br>' +
+          '<span style="color:var(--txf)">📋 ' + wlCount + ' à voir → <b>Watchlist</b>' + (skippedWL ? ' (<i>' + skippedWL + ' déjà vus ignorés</i>)' : '') + '</span><br>' +
+          '<span style="color:var(--txm)">⏱ voir barre de progression</span>' +
+          '</div>';
+        log.scrollTop = log.scrollHeight;
+      }
+
+      const BATCH = 150;
+      let totalAdded = 0, totalExisting = 0, finalNotFound = [];
+      const allBatches = [];
+
+      // History: movies
+      for (let i = 0; i < watchedMovies.length; i += BATCH)
+        allBatches.push({ type: 'history-movie', items: watchedMovies.slice(i, i + BATCH) });
+
+      // History: episodes grouped by show
+      const showsPayload = buildShowsPayload(watchedEpisodes);
+      for (let i = 0; i < showsPayload.length; i += BATCH)
+        allBatches.push({ type: 'history-show', items: showsPayload.slice(i, i + BATCH) });
+
+      // Watchlist : lots de 50 max pour éviter le 420
+      if (watchlistMovies.length || watchlistShows.length) {
+        const wlShows = [...new Map(watchlistShows.map(e => [e.show||e.rawTitle, { title: e.show||e.rawTitle, year: e.year||undefined }])).values()];
+        const wlMM    = watchlistMovies.map(e => ({ title: e.title||e.rawTitle, year: e.year||undefined }));
+        const WLB = 50;
+        for (let i = 0; i < Math.max(wlMM.length, wlShows.length, 1); i += WLB)
+          allBatches.push({ type: 'watchlist', movies: wlMM.slice(i,i+WLB), shows: wlShows.slice(i,i+WLB) });
+      }
+
+      const total = allBatches.length;
+      let batchesDone = 0;
+
+      for (const batch of allBatches) {
+        const isWatchlist = batch.type === 'watchlist';
+        const isMovie = batch.type === 'history-movie';
+        const endpoint = isWatchlist ? '/sync/watchlist' : '/sync/history';
+
+        let payload, itemCount;
+        if (isWatchlist) {
+          payload = { movies: batch.movies, shows: batch.shows };
+          itemCount = batch.movies.length + batch.shows.length;
+        } else if (isMovie) {
+          payload = { movies: batch.items.map(e => ({ title: e.title || e.rawTitle, year: e.year || undefined, watched_at: e.watched_at || undefined })) };
+          itemCount = batch.items.length;
+        } else {
+          payload = { shows: batch.items };
+          itemCount = batch.items.length;
+        }
+
+        if (itemCount === 0) { batchesDone++; continue; }
+
+        const tag = isWatchlist ? '📋 Watchlist' : isMovie ? '🎬 Films' : '📺 Séries';
+        lbl.textContent = `${tag} — lot ${batchesDone + 1}/${total} (${itemCount} éléments)…`;
+        cnt.textContent = `${batchesDone}/${total}`;
+        bar.style.width = Math.round(batchesDone / total * 100) + '%';
+
+        const d = await sendBatch(endpoint, payload, clientId, log);
+        if (d === '__unauthorized__') { lbl.classList.remove('pulsing'); lbl.textContent = '❌ Token expiré — reconnectez-vous.'; disconnectTrakt(); return; }
+        if (d === '__list_limit__') { lbl.classList.remove('pulsing'); lbl.textContent = '⚠️ Watchlist pleine — nettoyez-la puis relancez.'; break; }
+
+        if (d) {
+          const addedM = d.added?.movies || 0, addedE = d.added?.episodes || 0, addedS = d.added?.shows || 0;
+          totalAdded += addedM + addedE + addedS;
+          totalExisting += (d.existing?.movies || 0) + (d.existing?.episodes || 0) + (d.existing?.shows || 0);
+
+          // Retry not_found with Trakt IDs
+          const nfMovies = d.not_found?.movies || [];
+          const nfShows = d.not_found?.shows || [];
+          if (nfMovies.length && isMovie) {
+            const retry = await retryNotFound(nfMovies, 'movie', '/sync/history', clientId, log);
+            totalAdded += retry.added;
+            finalNotFound.push(...retry.stillNotFound.map(t => '🎬 ' + t));
+          } else if (nfMovies.length) {
+            finalNotFound.push(...nfMovies.map(m => '🎬 ' + (m.title || '?')));
+          }
+          if (nfShows.length) {
+            const retry = await retryNotFound(nfShows, 'show', '/sync/history', clientId, log);
+            totalAdded += retry.added;
+            if (retry.stillNotFound.length) {
+              log.innerHTML += '<div style="color:var(--warn)">🔀 ' + retry.stillNotFound.length + ' série(s) non trouvées — retry numérotation absolue S1 (split-cours)…</div>';
+              log.scrollTop = log.scrollHeight;
+              await sleep(1200);
+              const flatSet = new Set(retry.stillNotFound);
+              const flatPL = buildShowsPayload(watchedEpisodes.filter(function(e){ return flatSet.has(e.show||e.rawTitle||''); }), flatSet);
+              if (flatPL.length) {
+                const fd = await sendBatch('/sync/history', { shows: flatPL }, clientId, log);
+                if (fd && fd !== '__unauthorized__') {
+                  const fa = (fd.added?.episodes||0); totalAdded += fa;
+                  log.innerHTML += '<div style="color:var(--ok)">🔀 Absolu S1 : +' + fa + ' épisode(s)</div>';
+                  (fd.not_found?.shows||[]).forEach(function(s){ finalNotFound.push('📺 ' + (s.title||'?')); });
+                } else flatSet.forEach(function(t){ finalNotFound.push('📺 ' + t); });
+              } else flatSet.forEach(function(t){ finalNotFound.push('📺 ' + t); });
+            } else {
+              retry.stillNotFound.forEach(function(t){ finalNotFound.push('📺 ' + t); });
+            }
+          }
+
+          log.innerHTML += `<div style="color:var(--ok)">${tag} lot ${batchesDone + 1}: +${addedM + addedE + addedS} ajoutés, ${d.existing?.movies || 0 + d.existing?.episodes || 0} déjà présents</div>`;
+        }
+
+        log.scrollTop = log.scrollHeight;
+        batchesDone++;
+        await sleep(isWatchlist ? 3000 : 1200);
+      }
+
+      bar.style.width = '100%';
+      lbl.classList.remove('pulsing');
+      clearEtaBar(); lbl.textContent = '✅ Import terminé';
+      cnt.textContent = `${total}/${total}`;
+
+      if (finalNotFound.length) {
+        log.innerHTML += `<div style="color:var(--warn);margin-top:4px;border-top:1px solid var(--div);padding-top:4px">Introuvables sur Trakt (${finalNotFound.length}) — clique 🔍 pour rechercher manuellement :</div>`;
+        finalNotFound.forEach(function(rawLabel, nfIdx) {
+          const isMovie = rawLabel.startsWith('🎬');
+          const cleanTitle = rawLabel.replace(/^[📺🎬]\s*/,'').trim();
+          const rowId = 'nf_' + nfIdx;
+          log.innerHTML += `<div id="${rowId}" style="display:flex;align-items:center;gap:6px;color:var(--txf);padding:2px 0">
+            <span>• ${rawLabel}</span>
+            <button onclick="nfSearch('${rowId}','${cleanTitle.replace(/'/g,"\\'")}','${isMovie?'movie':'show'}')"
+              style="background:none;border:1px solid var(--bord);border-radius:4px;color:var(--txm);cursor:pointer;font-size:10px;padding:1px 6px;white-space:nowrap">🔍 Rechercher</button>
+          </div>`;
+        });
+      }
+      log.scrollTop = log.scrollHeight;
+
+      // Suggérer nettoyage watchlist post-import
+      if (watchlistShows.length + watchlistMovies.length > 0) {
+        log.innerHTML += '<div style="color:var(--warn);margin-top:6px;border-top:1px solid var(--div);padding-top:4px">' +
+          '💡 <b>Astuce :</b> Certains films/séries déjà vus peuvent encore être dans ta Watchlist Trakt (titres légèrement différents).' +
+          ' Clique sur <b>🧹 Nettoyer Watchlist</b> pour les supprimer automatiquement.</div>';
+        log.scrollTop = log.scrollHeight;
+      }
+      document.getElementById('impResults').classList.remove('hidden');
+      document.getElementById('impResultsBody').innerHTML =
+        `<div class="import-stat-row"><span class="import-stat-label">✅ Ajoutés</span><span class="import-stat-val ok">${totalAdded.toLocaleString('fr-FR')}</span></div>` +
+        `<div class="import-stat-row"><span class="import-stat-label">⏩ Déjà présents</span><span class="import-stat-val">${totalExisting.toLocaleString('fr-FR')}</span></div>` +
+        `<div class="import-stat-row"><span class="import-stat-label">⚠️ Introuvables</span><span class="import-stat-val skip">${finalNotFound.length.toLocaleString('fr-FR')}</span></div>`;
+      document.getElementById('btnImport').disabled = false;
+    }
+
+    /* EXPORT */
+    function dl(type) {
+      const mv = entries.filter(e => e.type === 'movie'), sh = entries.filter(e => e.type === 'episode');
+      if (type === 'all') { if (mv.length) _save(csvM(mv), 'tvtime_films_trakt.csv'); if (sh.length) setTimeout(() => _save(csvS(sh), 'tvtime_series_trakt.csv'), 300); return; }
+      if (type === 'movies') _save(csvM(mv), 'tvtime_films_trakt.csv');
+      if (type === 'shows') _save(csvS(sh), 'tvtime_series_trakt.csv');
+    }
+    const esc = s => (s || '').replace(/"/g, '""');
+    function csvM(e) { const l = ['title,year,watched_at']; for (const x of e) l.push(`"${esc(x.title)}",${x.year || ''},"${x.watched_at || ''}"`); return l.join('\r\n'); }
+    function csvS(e) { const l = ['show_title,show_year,season,episode,watched_at']; for (const x of e) l.push(`"${esc(x.show || x.title)}",${x.year || ''},${x.season != null ? x.season : ''},${x.episode != null ? x.episode : ''},"${x.watched_at || ''}"`); return l.join('\r\n'); }
+    function _save(content, name) { const b = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' }); const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 300); }
+    function reset() { entries = []; loadedFileNames = []; classifyAbort = false; document.getElementById('res').classList.add('hidden'); document.getElementById('empty').classList.remove('hidden'); document.getElementById('fi').value = ''; document.getElementById('loadedFiles').innerHTML = ''; document.getElementById('progWrap').classList.add('hidden'); document.querySelectorAll('.fg-card').forEach(c => c.classList.remove('active')); }
+  
+    /* ── CLEAR WATCHLIST ─────────────────────────────────────────────────── */
+    async function clearWatchlist() {
+      if (!traktAccessToken) { alert('Pas connecté.'); return; }
+      const clientId = document.getElementById('traktKey').value.trim();
+      const ok = await ppConfirm('⚠️ Vider entièrement ta Watchlist Trakt ?\nCette action est irréversible.');
+      if (!ok) return;
+      const log=document.getElementById('impLog'),bar=document.getElementById('impProgBar'),lbl=document.getElementById('impProgLabel'),cnt=document.getElementById('impProgCount');
+      ['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){ document.getElementById(id).disabled=true; });
+      document.getElementById('impProgWrap').classList.remove('hidden');
+      log.innerHTML=''; bar.style.width='0%'; lbl.classList.add('pulsing'); lbl.textContent='🗑️ Récupération…';
+      async function getAll(path) {
+        const all=[]; let page=1;
+        while(true) {
+          const r=await fetch('https://api.trakt.tv'+path+'?page='+page+'&limit=100',{headers:{'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId,'Authorization':'Bearer '+traktAccessToken}});
+          if(!r.ok) break;
+          const d=await r.json(); if(!d.length) break; all.push(...d);
+          if(page>=parseInt(r.headers.get('X-Pagination-Page-Count')||'1',10)) break;
+          page++; await sleep(500);
+        }
+        return all;
+      }
+      const movies=(await getAll('/sync/watchlist/movies')).map(function(m){return m.movie;}).filter(Boolean);
+      const shows=(await getAll('/sync/watchlist/shows')).map(function(s){return s.show;}).filter(Boolean);
+      const total=movies.length+shows.length;
+      if(!total){lbl.classList.remove('pulsing');lbl.textContent='✅ Watchlist déjà vide.';['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){document.getElementById(id).disabled=false;});return;}
+      setEta(Math.ceil((movies.length + shows.length) / 100) * 3 + 5);
+      log.innerHTML += '<div style="color:var(--warn)">🗑️ ' + movies.length + ' films + ' + shows.length + ' séries à supprimer…</div>';
+      let removed=0; const B=100;
+      const batches=[...Array.from({length:Math.ceil(movies.length/B)},function(_,i){return{movies:movies.slice(i*B,i*B+B),shows:[]};}),...Array.from({length:Math.ceil(shows.length/B)},function(_,i){return{movies:[],shows:shows.slice(i*B,i*B+B)};})];
+      for(let bi=0;bi<batches.length;bi++){
+        cnt.textContent=(bi+1)+'/'+batches.length; bar.style.width=Math.round((bi+1)/batches.length*100)+'%';
+        let att=0; while(att<4){att++;
+          const r=await fetch('https://api.trakt.tv/sync/watchlist/remove',{method:'POST',headers:{'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId,'Authorization':'Bearer '+traktAccessToken},body:JSON.stringify(batches[bi])});
+          if(r.status===429){await sleep(Math.min(parseInt(r.headers.get('Retry-After')||'30',10)*att,120)*1000);continue;}
+          if(!r.ok){log.innerHTML+='<div style="color:var(--err)">❌ HTTP '+r.status+' lot '+(bi+1)+'</div>';break;}
+          const d=await r.json(); removed+=(d.deleted?.movies||0)+(d.deleted?.shows||0);
+          log.innerHTML+='<div style="color:var(--ok)">🗑️ Lot '+(bi+1)+' : -'+((d.deleted?.movies||0)+(d.deleted?.shows||0))+'</div>'; break;
+        }
+        await sleep(1000);
+      }
+      bar.style.width='100%'; lbl.classList.remove('pulsing'); clearEtaBar(); lbl.textContent='✅ Watchlist vidée — '+removed+' éléments supprimés';
+      ['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){document.getElementById(id).disabled=false;});
+    }
+
+    /* ── SMART CLEAN WATCHLIST ───────────────────────────────────────────── */
+    async function smartCleanWatchlist() {
+      if (!traktAccessToken) { alert('Pas connecté.'); return; }
+      const clientId = document.getElementById('traktKey').value.trim();
+      const ok = await ppConfirm('🧹 Analyser ta Watchlist Trakt et supprimer automatiquement les séries/films déjà commencés ou vus ?\n\nTa progression restera dans l\'historique Trakt.');
+      if (!ok) return;
+      const log=document.getElementById('impLog'),bar=document.getElementById('impProgBar'),lbl=document.getElementById('impProgLabel'),cnt=document.getElementById('impProgCount');
+      ['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){document.getElementById(id).disabled=true;});
+      document.getElementById('impProgWrap').classList.remove('hidden');
+      log.innerHTML=''; bar.style.width='0%'; lbl.classList.add('pulsing'); lbl.textContent='🔍 Analyse en cours…';
+      async function getAll(path){
+        const all=[]; let page=1;
+        while(true){
+          const r=await fetch('https://api.trakt.tv'+path+'?page='+page+'&limit=100',{headers:{'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId,'Authorization':'Bearer '+traktAccessToken}});
+          if(!r.ok) break; const d=await r.json(); if(!d.length) break; all.push(...d);
+          if(page>=parseInt(r.headers.get('X-Pagination-Page-Count')||'1',10)) break; page++; await sleep(500);
+        }
+        return all;
+      }
+      lbl.textContent='🔍 Récupération Watchlist…';
+      const wlM=(await getAll('/sync/watchlist/movies')).map(function(x){return x.movie;}).filter(Boolean);
+      const wlS=(await getAll('/sync/watchlist/shows')).map(function(x){return x.show;}).filter(Boolean);
+      bar.style.width='25%';
+      lbl.textContent='🔍 Récupération historique…';
+      const whM=(await getAll('/sync/watched/movies')).map(function(x){return x.movie?.ids?.trakt;}).filter(Boolean);
+      const whS=(await getAll('/sync/watched/shows')).map(function(x){return x.show?.ids?.trakt;}).filter(Boolean);
+      bar.style.width='50%';
+      const wmSet=new Set(whM), wsSet=new Set(whS);
+      const rmM=wlM.filter(function(m){return wmSet.has(m.ids?.trakt);});
+      const rmS=wlS.filter(function(s){return wsSet.has(s.ids?.trakt);});
+      const keep=wlM.length-rmM.length+wlS.length-rmS.length;
+      log.innerHTML='<div style="color:var(--txf)">📋 Watchlist : '+wlM.length+' films + '+wlS.length+' séries</div>'+
+        '<div style="color:var(--warn)">🗑️ À supprimer : '+rmM.length+' films + '+rmS.length+' séries déjà vus</div>'+
+        '<div style="color:var(--ok)">✅ À conserver : '+keep+' éléments</div>';
+      if(!rmM.length&&!rmS.length){bar.style.width='100%';lbl.classList.remove('pulsing');lbl.textContent='✅ Watchlist déjà propre !';['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){document.getElementById(id).disabled=false;});return;}
+      setEta(Math.ceil((rmM.length + rmS.length) / 100) * 3 + 5);
+      const ok2=await ppConfirm('🧹 Résultat :\n• '+rmS.length+' séries déjà commencées\n• '+rmM.length+' films déjà vus\n\nWatchlist après : '+keep+' éléments\nConfirmer la suppression ?');
+      if(!ok2){lbl.classList.remove('pulsing');lbl.textContent='⏹️ Annulé.';['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){document.getElementById(id).disabled=false;});return;}
+      let removed=0; const B=100;
+      const batches=[...Array.from({length:Math.ceil(rmM.length/B)||0},function(_,i){return{movies:rmM.slice(i*B,i*B+B),shows:[]};}),...Array.from({length:Math.ceil(rmS.length/B)||0},function(_,i){return{movies:[],shows:rmS.slice(i*B,i*B+B)};})];
+      for(let bi=0;bi<batches.length;bi++){
+        cnt.textContent=(bi+1)+'/'+batches.length; bar.style.width=Math.round(50+(bi+1)/batches.length*50)+'%';
+        let att=0; while(att<4){att++;
+          const r=await fetch('https://api.trakt.tv/sync/watchlist/remove',{method:'POST',headers:{'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId,'Authorization':'Bearer '+traktAccessToken},body:JSON.stringify(batches[bi])});
+          if(r.status===429){await sleep(Math.min(parseInt(r.headers.get('Retry-After')||'30',10)*att,120)*1000);continue;}
+          if(!r.ok) break;
+          const d=await r.json(); removed+=(d.deleted?.movies||0)+(d.deleted?.shows||0);
+          log.innerHTML+='<div style="color:var(--ok)">🗑️ Lot '+(bi+1)+' : -'+((d.deleted?.movies||0)+(d.deleted?.shows||0))+'</div>'; break;
+        }
+        await sleep(1000);
+      }
+      bar.style.width='100%'; lbl.classList.remove('pulsing');
+      clearEtaBar(); lbl.textContent='✅ Nettoyage terminé — '+removed+' supprimés. Watchlist : ~'+keep+' éléments.';
+      ['btnClearWL','btnSmartClean','btnImport'].forEach(function(id){document.getElementById(id).disabled=false;});
+    }
+
+  
+    /* ── NUKE TRAKT : supprimer tout l'historique + watchlist ───────────── */
+    async function nukeTrakt() {
+      if (!traktAccessToken) { alert('Pas connecté.'); return; }
+      const clientId = document.getElementById('traktKey').value.trim();
+      const ok = await ppConfirm('☢️ ATTENTION — Cette action supprime TOUT de ton compte Trakt :\n\n• Historique complet (films + séries + en cours)\n• Watchlist\n• Notes (ratings)\n• Collection\n\nCette action est IRRÉVERSIBLE.\nConfirmer ?');
+      if (!ok) return;
+      const ok2 = await ppConfirm('⚠️ Dernière confirmation — Remettre Trakt à zéro complet ?');
+      if (!ok2) return;
+
+      const log=document.getElementById('impLog'),bar=document.getElementById('impProgBar'),lbl=document.getElementById('impProgLabel'),cnt=document.getElementById('impProgCount');
+      ['btnNuke','btnClearWL','btnSmartClean','btnImport'].forEach(function(id){const el=document.getElementById(id);if(el)el.disabled=true;});
+      document.getElementById('impProgWrap').classList.remove('hidden');
+      log.innerHTML=''; bar.style.width='0%'; lbl.classList.add('pulsing');
+
+      const H = {'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId,'Authorization':'Bearer '+traktAccessToken};
+
+      async function getAllPages(path) {
+        const all=[]; let page=1;
+        while(true){
+          const r=await fetch('https://api.trakt.tv'+path+'?page='+page+'&limit=100',{headers:H});
+          if(!r.ok) break; const d=await r.json(); if(!d||!d.length) break; all.push(...d);
+          const tp=parseInt(r.headers.get('X-Pagination-Page-Count')||'1',10); if(page>=tp) break; page++; await sleep(400);
+        }
+        return all;
+      }
+
+      async function rmBatch(items, endpoint, toPayload) {
+        if(!items.length) return;
+        const B=100;
+        for(let i=0;i<items.length;i+=B){
+          const batch=items.slice(i,i+B);
+          let att=0;
+          while(att<4){att++;
+            const r=await fetch('https://api.trakt.tv'+endpoint,{method:'POST',headers:H,body:JSON.stringify(toPayload(batch))});
+            if(r.status===429){await sleep(Math.min(parseInt(r.headers.get('Retry-After')||'30',10)*att,120)*1000);continue;}
+            if(r.ok){const d=await r.json(); nukeTotal+=(Object.values(d.deleted||{}).reduce(function(a,v){return a+(+v||0);},0)||batch.length);}
+            break;
+          }
+          cnt.textContent=nukeTotal+' supprimés';
+          log.innerHTML+='<div style="color:var(--ok)">🗑️ '+nukeTotal+' supprimés…</div>'; log.scrollTop=log.scrollHeight;
+          await sleep(900);
+        }
+      }
+
+      let nukeTotal=0;
+      const steps=[
+        {label:'📺 Historique films…',     path:'/sync/watched/movies',     key:'movie', ep:'/sync/history/remove',    pl:function(b){return {movies:b};}},
+        {label:'📺 Historique séries…',    path:'/sync/watched/shows',      key:'show',  ep:'/sync/history/remove',    pl:function(b){return {shows:b};}},
+        {label:'📋 Watchlist films…',      path:'/sync/watchlist/movies',   key:'movie', ep:'/sync/watchlist/remove',  pl:function(b){return {movies:b};}},
+        {label:'📋 Watchlist séries…',     path:'/sync/watchlist/shows',    key:'show',  ep:'/sync/watchlist/remove',  pl:function(b){return {shows:b};}},
+        {label:'⭐ Ratings films…',        path:'/sync/ratings/movies',     key:'movie', ep:'/sync/ratings/remove',    pl:function(b){return {movies:b};}},
+        {label:'⭐ Ratings séries…',       path:'/sync/ratings/shows',      key:'show',  ep:'/sync/ratings/remove',    pl:function(b){return {shows:b};}},
+        {label:'📦 Collection films…',     path:'/sync/collection/movies',  key:'movie', ep:'/sync/collection/remove', pl:function(b){return {movies:b};}},
+        {label:'📦 Collection séries…',    path:'/sync/collection/shows',   key:'show',  ep:'/sync/collection/remove', pl:function(b){return {shows:b};}},
+      ];
+      const total=steps.length;
+
+      for(let si=0;si<steps.length;si++){
+        const s=steps[si];
+        lbl.textContent='☢️ Récupération '+s.label;
+        bar.style.width=Math.round((si/total)*50)+'%';
+        const items=(await getAllPages(s.path)).map(function(x){return {ids:(x[s.key]||{}).ids};}).filter(function(x){return x.ids&&x.ids.trakt;});
+        log.innerHTML+='<div style="color:var(--txf)">'+s.label+' '+items.length+' trouvés</div>'; log.scrollTop=log.scrollHeight;
+        if(!items.length) continue;
+        lbl.textContent='☢️ Suppression '+s.label;
+        bar.style.width=Math.round((si/total)*50+50*(si/(total*2)))+'%';
+        await rmBatch(items, s.ep, s.pl);
+        setEta(Math.round((total-si-1)*8));
+      }
+
+      bar.style.width='100%'; clearEtaBar(); lbl.classList.remove('pulsing');
+      lbl.textContent='✅ Trakt réinitialisé — '+nukeTotal+' éléments supprimés.';
+      cnt.textContent='';
+      log.innerHTML+='<div style="color:var(--ok);font-weight:600;margin-top:4px">✅ Compte remis à zéro. Tu peux maintenant relancer l\'import TV Time.</div>';
+      ['btnNuke','btnClearWL','btnSmartClean','btnImport'].forEach(function(id){const el=document.getElementById(id);if(el)el.disabled=false;});
+    }
+
+  
+    /* ── Recherche manuelle pour les introuvables ────────────────────────── */
+    async function nfSearch(rowId, title, type) {
+      const clientId = document.getElementById('traktKey').value.trim();
+      if (!clientId) { alert('Clé API manquante'); return; }
+
+      const row = document.getElementById(rowId);
+      if (!row) return;
+
+      // Remplacer la ligne par une zone de recherche inline
+      row.innerHTML = `
+        <div style="width:100%;background:var(--surf2);border:1px solid var(--bord);border-radius:6px;padding:6px 8px;margin:2px 0">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+            <input id="${rowId}_q" type="text" value="${title.replace(/"/g,'&quot;')}"
+              style="flex:1;background:var(--bg);border:1px solid var(--bord);border-radius:4px;color:var(--tx);padding:3px 7px;font-size:12px"
+              onkeydown="if(event.key==='Enter')nfDoSearch('${rowId}','${type}')"/>
+            <select id="${rowId}_type" style="background:var(--bg);border:1px solid var(--bord);border-radius:4px;color:var(--tx);padding:3px">
+              <option value="movie" ${type==='movie'?'selected':''}>🎬 Film</option>
+              <option value="show"  ${type==='show' ?'selected':''}>📺 Série</option>
+            </select>
+            <button onclick="nfDoSearch('${rowId}','${type}')"
+              style="background:var(--trakt);border:none;border-radius:4px;color:#fff;cursor:pointer;padding:3px 10px;font-size:12px">🔍</button>
+          </div>
+          <div id="${rowId}_results" style="font-size:11px;color:var(--txm)">Appuie sur Entrée ou 🔍 pour chercher…</div>
+        </div>`;
+    }
+
+    async function nfDoSearch(rowId, defaultType) {
+      const clientId = document.getElementById('traktKey').value.trim();
+      const q = document.getElementById(rowId + '_q')?.value?.trim();
+      const type = document.getElementById(rowId + '_type')?.value || defaultType;
+      const resEl = document.getElementById(rowId + '_results');
+      if (!q || !resEl) return;
+      resEl.innerHTML = '<span style="color:var(--txm)">⏳ Recherche…</span>';
+
+      try {
+        const url = 'https://api.trakt.tv/search/' + type + '?query=' + encodeURIComponent(q) + '&limit=6&extended=full';
+        const r = await fetch(url, { headers: { 'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId } });
+        if (!r.ok) { resEl.innerHTML = '<span style="color:var(--err)">Erreur HTTP ' + r.status + '</span>'; return; }
+        const d = await r.json();
+        if (!d || !d.length) { resEl.innerHTML = '<span style="color:var(--warn)">Aucun résultat — essaie un autre terme</span>'; return; }
+
+        resEl.innerHTML = d.map(function(item) {
+          const obj = item.movie || item.show;
+          const yr  = obj.year || '?';
+          const genres = (obj.genres||[]).slice(0,2).join(', ');
+          const score = item.score ? Math.round(item.score) : '';
+          return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--div)">' +
+            '<span style="flex:1;color:var(--tx)">' + (obj.title||'?') + ' <span style="color:var(--txm)">(' + yr + ')' + (genres?' · '+genres:'') + '</span></span>' +
+            '<button onclick="nfApply(\'' + rowId + '\',\'' + type + '\',' + JSON.stringify(obj.ids) + ',\'' + (obj.title||'').replace(/'/g,"\\'") + '\',\'' + yr + '\')"' +
+            ' style="background:var(--ok);border:none;border-radius:4px;color:#fff;cursor:pointer;padding:2px 8px;font-size:11px;white-space:nowrap">✅ Ajouter</button>' +
+            '</div>';
+        }).join('');
+      } catch(e) {
+        resEl.innerHTML = '<span style="color:var(--err)">Erreur : ' + e.message + '</span>';
+      }
+    }
+
+    async function nfApply(rowId, type, ids, title, year) {
+      const clientId = document.getElementById('traktKey').value.trim();
+      const resEl = document.getElementById(rowId + '_results');
+      if (!ids || !ids.trakt) { if(resEl) resEl.innerHTML = '<span style="color:var(--err)">IDs manquants</span>'; return; }
+      if (resEl) resEl.innerHTML = '<span style="color:var(--txm)">⏳ Ajout en cours…</span>';
+
+      const payload = type === 'movie'
+        ? { movies: [{ ids, watched_at: null }] }
+        : { shows:  [{ ids }] };
+
+      try {
+        const r = await fetch('https://api.trakt.tv/sync/history', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json','trakt-api-version':'2','trakt-api-key':clientId,'Authorization':'Bearer ' + traktAccessToken },
+          body: JSON.stringify(payload)
+        });
+        const d = await r.json();
+        const added = (d.added?.movies||0) + (d.added?.episodes||0);
+        const row = document.getElementById(rowId);
+        if (row) {
+          row.style.background = 'rgba(39,174,96,.12)';
+          row.innerHTML = '<span style="color:var(--ok)">✅ Ajouté : ' + title + ' (' + year + ')</span>';
+        }
+      } catch(e) {
+        if (resEl) resEl.innerHTML = '<span style="color:var(--err)">Erreur : ' + e.message + '</span>';
+      }
+    }
+
+  </script>
+</body>
+
+</html>
